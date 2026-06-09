@@ -551,7 +551,7 @@ const enrichCustomer = (custId) => {
     })),
     relatedQuotes: quotes.map(q => ({
       id: q.id, tour: q.tour,
-      amount: `${q.currency==="TRY"?"₺":"€"}${q.fmtNum(total)}`,
+      amount: `${q.currency==="TRY"?"₺":"€"}${fmtNum(q.total)}`,
       status: q.status, date: q.createdAt,
     })),
     relatedReservations: reservations.map(r => ({
@@ -2045,7 +2045,7 @@ function KpiRow() {
     },
     {
       label:"Bekleyen Ödemeler",
-      value:`€${m.fmtNum(pendingEUR)}`,
+      value:`€${fmtNum(m.pendingEUR)}`,
       sub:`${m.pendingPaysCount} rezervasyon`,
       icon:"M2 9a2 2 0 012-2h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V9zM2 13h20",
       alert:m.pendingPaysCount>0,
@@ -2059,7 +2059,7 @@ function KpiRow() {
     },
     {
       label:"Bu Ay Beklenen Ciro",
-      value:`€${m.fmtNum(monthRevEUR)}`,
+      value:`€${fmtNum(m.monthRevEUR)}`,
       sub:"Bu ay",
       icon:"M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",
       accent:true,
@@ -3802,7 +3802,7 @@ function QuoteRow({ q, isLast, onSelect }) {
       {}
       <td style={{ padding:"14px 12px", borderBottom:isLast?"none":`1px solid ${C.borderLight}`, verticalAlign:"middle" }}>
         <div style={{ fontSize:15, fontWeight:700, color:C.text, fontFamily:"'Playfair Display',serif" }}>
-          {q.currency === "EUR" ? "€" : "₺"}{q.fmtNum(total)}
+          {q.currency === "EUR" ? "€" : "₺"}{fmtNum(q.total)}
         </div>
         <div style={{ fontSize:11.5, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", marginTop:2 }}>{q.currency}</div>
       </td>
@@ -6306,7 +6306,7 @@ function ReservationDetailPage({ resId, onBack }) {
                 display:"flex", alignItems:"baseline", gap:8, marginBottom:14,
                 paddingBottom:14, borderBottom:`1px solid ${C.borderLight}`,
               }}>
-                <span style={{ fontSize:32, fontWeight:700, color:C.text, fontFamily:"'Playfair Display',serif" }}>{sym}{r.fmtNum(total)}</span>
+                <span style={{ fontSize:32, fontWeight:700, color:C.text, fontFamily:"'Playfair Display',serif" }}>{sym}{fmtNum(r.total)}</span>
                 <span style={{ fontSize:13, color:C.textFaint, fontFamily:"'DM Sans',sans-serif" }}>{r.currency}</span>
               </div>
               {}
@@ -6321,8 +6321,8 @@ function ReservationDetailPage({ resId, onBack }) {
               </div>
             </div>
             {[
-              { label:"Kapora", val:`${sym}${r.fmtNum(deposit)}`, color:C.amber },
-              { label:"Kalan Ödeme", val:`${sym}${r.fmtNum(remaining)}`, color: r.remaining > 0 ? C.red : C.green, alert: r.remaining > 0 },
+              { label:"Kapora", val:`${sym}${fmtNum(r.deposit)}`, color:C.amber },
+              { label:"Kalan Ödeme", val:`${sym}${fmtNum(r.remaining)}`, color: r.remaining > 0 ? C.red : C.green, alert: r.remaining > 0 },
               { label:"Ödeme Durumu", val:null, badge:r.payStatus },
             ].map((row, i, arr) => (
               <div key={i} style={{
@@ -8303,11 +8303,11 @@ function PaymentsPage() {
   return (
     <>
       {}
-      {openPayment && <PaymentDrawer payment={openPayment} onClose={()=>setOpenPayment(null)}/>}
+      {openPayment ? <PaymentDrawer payment={openPayment} onClose={()=>setOpenPayment(null)}/> : null}
       {showNewPayment ? (<NewPaymentModal onClose={()=>{ setShowNewPayment(false); setPayTick(n=>n+1); reloadPays && reloadPays(); }}/>) : null}
 
       {payLoading  ? <LoadingState label="Ödemeler yükleniyor…"/> : null}
-      {payError   && <ErrorState message={payError} onRetry={reloadPays}/>}
+      {payError ? <ErrorState message={payError} onRetry={reloadPays}/> : null}
       <div style={{display:"flex", flexDirection:"column", gap:20}}>
 
         {}
@@ -8497,7 +8497,7 @@ function PaymentsPage() {
                   return (
                     <MobileCard onClick={()=>setOpenPayment(p)} accent={p.status==="Bekliyor"?C.red:undefined}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                        <div style={{fontSize:15,fontWeight:700,color:C.gold,fontFamily:"'Playfair Display',serif"}}>{sym}{p.fmtNum(amount)}</div>
+                        <div style={{fontSize:15,fontWeight:700,color:C.gold,fontFamily:"'Playfair Display',serif"}}>{sym}{fmtNum(p.amount)}</div>
                         <span style={{fontSize:11,padding:"2px 7px",borderRadius:99,color:psm.color,background:psm.bg,fontFamily:"'DM Sans',sans-serif",fontWeight:500}}>{p.status}</span>
                       </div>
                       <div style={{fontSize:13,color:C.text,fontFamily:"'DM Sans',sans-serif",marginBottom:3}}>{cust?.name||"—"}</div>
@@ -10949,8 +10949,8 @@ function ReportsPage() {
         <RpKpiCard label="Gönderilen Teklif"      value={kpi.quotes}                            icon="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6"                                    color={C.amber} bg={C.amberBg}  sub={`${Math.round(kpi.quotes/kpi.leads*100)}% talep → teklif`}/>
         <RpKpiCard label="Kesinleşen Rezervasyon" value={kpi.reservations}                      icon="M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"                              color={C.green} bg={C.greenBg}  sub={`${kpi.completed} tur tamamlandı`}/>
         <RpKpiCard label="Dönüşüm Oranı"          value={`%${convRate}`}                        icon="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"                                                                      color={C.navy}  bg={C.ivoryDark} sub="Talep → Rezervasyon"/>
-        <RpKpiCard label="Beklenen Gelir"          value={`€${kpi.fmtNum(expectedEur)}`} icon="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"                                    color={C.gold}  bg={C.goldPale}  sub="EUR bazlı tüm rezervasyonlar" highlight/>
-        <RpKpiCard label="Tahsil Edilen Gelir"    value={`€${kpi.fmtNum(collectedEur)}`} icon="M22 11.08V12a10 10 0 11-5.93-9.14 M22 4L12 14.01l-3-3"                                    color={C.green} bg={C.greenBg}  sub={`%${Math.round(kpi.collectedEur/kpi.expectedEur*100)} tahsil edildi`} highlight/>
+        <RpKpiCard label="Beklenen Gelir"          value={`€${fmtNum(kpi.expectedEur)}`} icon="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"                                    color={C.gold}  bg={C.goldPale}  sub="EUR bazlı tüm rezervasyonlar" highlight/>
+        <RpKpiCard label="Tahsil Edilen Gelir"    value={`€${fmtNum(kpi.collectedEur)}`} icon="M22 11.08V12a10 10 0 11-5.93-9.14 M22 4L12 14.01l-3-3"                                    color={C.green} bg={C.greenBg}  sub={`%${Math.round(kpi.collectedEur/kpi.expectedEur*100)} tahsil edildi`} highlight/>
       </div>
 
       {}
@@ -11043,7 +11043,7 @@ function ReportsPage() {
                         }}>%{s.conversion}</span>
                       </td>
                       <td style={{padding:"12px 10px", borderBottom:`1px solid ${C.borderLight}`, textAlign:"center", verticalAlign:"middle"}}>
-                        <span style={{fontSize:13, fontWeight:600, color:C.gold, fontFamily:"'Playfair Display',serif"}}>€{s.fmtNum(revenue)}</span>
+                        <span style={{fontSize:13, fontWeight:600, color:C.gold, fontFamily:"'Playfair Display',serif"}}>€{fmtNum(s.revenue)}</span>
                       </td>
                       <td style={{padding:"12px 10px", borderBottom:`1px solid ${C.borderLight}`, verticalAlign:"middle", minWidth:80}}>
                         <MiniBar value={s.leads} max={maxLeads} color={C.navy} height={5}/>
@@ -11093,7 +11093,7 @@ function ReportsPage() {
                   ))}
                   {}
                   <div style={{textAlign:"right", flexShrink:0}}>
-                    <div style={{fontSize:18, fontWeight:700, color:C.gold, fontFamily:"'Playfair Display',serif", lineHeight:1}}>€{t.fmtNum(revenue)}</div>
+                    <div style={{fontSize:18, fontWeight:700, color:C.gold, fontFamily:"'Playfair Display',serif", lineHeight:1}}>€{fmtNum(t.revenue)}</div>
                     <div style={{fontSize:11, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", marginTop:2}}>Ort. €{t.avgPrice}/kişi</div>
                   </div>
                 </div>
@@ -11155,11 +11155,11 @@ function ReportsPage() {
           <RpSection title="Ödeme Analizi" icon="M2 9a2 2 0 012-2h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V9zM2 13h20">
             <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12, marginBottom:20}}>
               {[
-                { label:"Toplam Beklenen", val:`€${metrics.payments.fmtNum(expected)}`,   color:C.text,  bg:C.ivoryDark },
-                { label:"Tahsil Edilen",   val:`€${metrics.payments.fmtNum(collected)}`,  color:C.green, bg:C.greenBg },
-                { label:"Bekleyen",        val:`€${metrics.payments.fmtNum(pending)}`,    color:C.red,   bg:C.redBg },
-                { label:"Kısmi Ödenen",    val:`€${metrics.payments.fmtNum(partial)}`,    color:C.amber, bg:C.amberBg },
-                { label:"İade",            val:`€${metrics.payments.fmtNum(refunded)}`,   color:C.textFaint, bg:C.ivoryDark },
+                { label:"Toplam Beklenen", val:`€${fmtNum(payments.expected)}`,   color:C.text,  bg:C.ivoryDark },
+                { label:"Tahsil Edilen",   val:`€${fmtNum(payments.collected)}`,  color:C.green, bg:C.greenBg },
+                { label:"Bekleyen",        val:`€${fmtNum(payments.pending)}`,    color:C.red,   bg:C.redBg },
+                { label:"Kısmi Ödenen",    val:`€${fmtNum(payments.partial)}`,    color:C.amber, bg:C.amberBg },
+                { label:"İade",            val:`€${fmtNum(payments.refunded)}`,   color:C.textFaint, bg:C.ivoryDark },
               ].map((r,i)=>(
                 <div key={i} style={{
                   background:r.bg, border:`1px solid ${r.color}22`,
@@ -11204,7 +11204,7 @@ function ReportsPage() {
                   <div style={{fontSize:11.5, color:C.textFaint, fontFamily:"'DM Mono',monospace"}}>{p.resId} · Son tarih: {p.dueDate}</div>
                 </div>
                 <div style={{fontSize:15, fontWeight:700, color:p.urgent?C.red:C.text, fontFamily:"'Playfair Display',serif", flexShrink:0}}>
-                  €{p.fmtNum(remaining)}
+                  €{fmtNum(p.remaining)}
                 </div>
                 {p.urgent && <span style={{
                   fontSize:10, fontWeight:600, color:C.red,
@@ -11279,14 +11279,14 @@ function ReportsPage() {
                   color:C.green, bg:C.greenBg,
                   label:"En Güçlü Kaynak",
                   value:"Website",
-                  sub:`${metrics.sources[0].leads} talep · %${metrics.sources[0].conversion} dönüşüm`,
+                  sub:`${(metrics.sources?.[0]?.leads ?? 0)} talep · %(${metrics.sources?.[0]?.conversion ?? 0}) dönüşüm`,
                 },
                 {
                   icon:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10",
                   color:C.gold, bg:C.goldPale,
                   label:"En Çok Satan Tur",
                   value:"Private Istanbul",
-                  sub:`${metrics.tours[0].reservations} rezervasyon · €${metrics.tours[0].fmtNum(revenue)}`,
+                  sub:`${(metrics.tours?.[0]?.reservations ?? 0)} rezervasyon · €${fmtNum(metrics.tours?.[0]?.revenue ?? 0)}`,
                 },
                 {
                   icon:"M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",
@@ -11647,7 +11647,7 @@ function GuestDetailPage({ guestId, onBack, onNavigate }) {
           { label:"Toplam Talep",      val:g.leads,        icon:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01", color:C.blue, bg:C.blueBg },
           { label:"Toplam Teklif",     val:g.quotes,       icon:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6", color:C.amber,bg:C.amberBg },
           { label:"Rezervasyon",       val:g.reservations, icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color:C.green,bg:C.greenBg },
-          { label:"Toplam Harcama",    val: g.totalSpend>0?`${g.currency==="TRY"?"₺":"€"}${g.fmtNum(totalSpend)}`:"—", icon:"M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6", color:C.gold, bg:C.goldPale },
+          { label:"Toplam Harcama",    val: g.totalSpend>0?`${g.currency==="TRY"?"₺":"€"}${fmtNum(g.totalSpend)}`:"—", icon:"M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6", color:C.gold, bg:C.goldPale },
           { label:"Açık Görev",        val:g.openTasks,    icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color:g.openTasks>0?C.red:C.green, bg:g.openTasks>0?C.redBg:C.greenBg },
         ].map((k,i)=>(
           <div key={i} style={{
@@ -12132,7 +12132,7 @@ function CustomersPage({ onSelectGuest }) {
                       {}
                       <td style={{padding:"14px 12px", borderBottom:isLast?"none":`1px solid ${C.borderLight}`, verticalAlign:"middle"}}>
                         <span style={{fontSize:14, fontWeight:700, color:g.totalSpend>0?C.gold:C.textFaint, fontFamily:"'Playfair Display',serif"}}>
-                          {g.totalSpend>0?`${g.currency==="TRY"?"₺":"€"}${g.fmtNum(totalSpend)}`:"—"}
+                          {g.totalSpend>0?`${g.currency==="TRY"?"₺":"€"}${fmtNum(g.totalSpend)}`:"—"}
                         </span>
                       </td>
                       {}
@@ -12288,7 +12288,7 @@ function ConvDetail({ conv }) {
         </div>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"16px 20px",background:C.ivory,display:"flex",flexDirection:"column"}}>
-        {conv.messages.length>0&&<div style={{textAlign:"center",marginBottom:16,fontSize:11.5,color:C.textFaint,fontFamily:"'DM Sans',sans-serif"}}><span style={{background:C.ivoryDark,padding:"3px 12px",borderRadius:99,border:`1px solid ${C.border}`}}>{conv.messages[0].date}</span></div>}
+        {conv.messages.length>0&&<div style={{textAlign:"center",marginBottom:16,fontSize:11.5,color:C.textFaint,fontFamily:"'DM Sans',sans-serif"}}><span style={{background:C.ivoryDark,padding:"3px 12px",borderRadius:99,border:`1px solid ${C.border}`}}>{conv.messages?.[0]?.date}</span></div>}
         {conv.messages.map(msg=><MsgBubble key={msg.id} msg={msg} customerName={cust?.name}/>)}
       </div>
       <div style={{padding:"12px 16px",borderTop:`1px solid ${C.border}`,background:C.white,flexShrink:0}}>
@@ -12884,7 +12884,7 @@ const SupabasePaymentRepo = {
   async getById(id){const sb=getSB();if(!sb)return PaymentRepository.getById(id);const{data,error}=await sb.from('payments').select('*,customer:customers(*),reservation:reservations(*)').eq('id',id).maybeSingle();if(error)throw new Error(error.message);return mapPayFromDB(data);},
   async getByResId(rid){const sb=getSB();if(!sb)return PaymentRepository.getByResId(rid);const{data,error}=await sb.from('payments').select('*').eq('reservation_id',rid).order('created_at',{ascending:true});if(error)throw new Error(error.message);return(data||[]).map(mapPayFromDB);},
   async getByCustomerId(cid){const sb=getSB();if(!sb)return PaymentRepository.getAll({customerId:cid});const{data,error}=await sb.from('payments').select('*').eq('customer_id',cid).order('created_at',{ascending:false});if(error)throw new Error(error.message);return(data||[]).map(mapPayFromDB);},
-  async create(d){const sb=getSB();if(!sb)return PaymentRepository.create(d);let pn=`PAY-${String(Date.now()).slice(-6)}`;try{const{data:ref}=await sb.rpc('next_ref_number',{prefix:'PAY',table_name:'payments',number_col:'payment_number'});if(ref)pn=ref;}catch(_){}const amt=parseFloat(d.amount)||0;const sm={'Tam Ödeme':'paid','İade':'refunded','Kapora':'paid','Kalan Ödeme':'paid'};const tm={'Tam Ödeme':'full','İade':'refund','Kapora':'deposit','Kalan Ödeme':'balance'};const row={payment_number:pn,reservation_id:d.resId||d.reservationId||null,customer_id:d.customerId||null,payment_type:tm[d.paymentType]||d.paymentType?.toLowerCase()||'deposit',status:sm[d.paymentType]||'paid',amount:amt,currency:d.currency||'EUR',method:_mToDB(d.method),paid_at:new Date().toISOString(),notes:d.notes||null};const{data:c,error}=await sb.from('payments').insert(row).select().single();if(error)throw new Error(error.message);if(row.reservation_id)await _updateResPayStatus(sb,row.reservation_id);await _sbLog('payment',c.id,'payment_received',`Ödeme: ${d.currency==='TRY'?'₺':'€'}${amt.toLocaleString('tr-TR')}`);return mapPayFromDB(c);},
+  async create(d){const sb=getSB();if(!sb)return PaymentRepository.create(d);let pn=`PAY-${String(Date.now()).slice(-6)}`;try{const{data:ref}=await sb.rpc('next_ref_number',{prefix:'PAY',table_name:'payments',number_col:'payment_number'});if(ref)pn=ref;}catch(_){}const amt=parseFloat(d.amount)||0;const sm={'Tam Ödeme':'paid','İade':'refunded','Kapora':'paid','Kalan Ödeme':'paid'};const tm={'Tam Ödeme':'full','İade':'refund','Kapora':'deposit','Kalan Ödeme':'balance'};const row={payment_number:pn,reservation_id:d.resId||d.reservationId||null,customer_id:d.customerId||null,payment_type:tm[d.paymentType]||d.paymentType?.toLowerCase()||'deposit',status:sm[d.paymentType]||'paid',amount:amt,currency:d.currency||'EUR',method:_mToDB(d.method),paid_at:new Date().toISOString(),notes:d.notes||null};const{data:c,error}=await sb.from('payments').insert(row).select().single();if(error)throw new Error(error.message);if(row.reservation_id)await _updateResPayStatus(sb,row.reservation_id);await _sbLog('payment',c.id,'payment_received',`Ödeme: ${d.currency==='TRY'?'₺':'€'}${fmtNum(amt)}`);return mapPayFromDB(c);},
   async update(id,p){const sb=getSB();if(!sb)return PaymentRepository.update(id,p);const{data:u,error}=await sb.from('payments').update(p).eq('id',id).select().single();if(error)throw new Error(error.message);return mapPayFromDB(u);},
   async delete(id){const sb=getSB();if(!sb)return PaymentRepository.delete(id);const{error}=await sb.from('payments').update({status:'cancelled'}).eq('id',id);if(error)throw new Error(error.message);return true;},
 };
@@ -15629,7 +15629,7 @@ function App() {
           {renderPage()}
         </div>
       </main>
-      {toastMsg && <Toast msg={toastMsg} onDone={()=>setToastMsg(null)}/>}
+      {toastMsg ? <Toast msg={toastMsg} onDone={()=>setToastMsg(null)}/> : null}
       <DataSourceBadge/>
     </>
     </AuthGuard>
