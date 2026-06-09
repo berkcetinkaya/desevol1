@@ -1949,7 +1949,7 @@ const KPI_DATA = [
   },
   {
     label:"Bekleyen Ödemeler",
-    value:`€${METRICS.fmtNum(pendingPaymentsEUR)}`,
+    value:`€${fmtNum(METRICS.pendingPaymentsEUR)}`,
     sub:`${METRICS.pendingPaymentsCount} rezervasyon`,
     icon:"M2 9a2 2 0 012-2h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V9zM2 13h20",
     alert: METRICS.pendingPaymentsCount > 0,
@@ -1962,8 +1962,8 @@ const KPI_DATA = [
   },
   {
     label:"Bu Ay Beklenen Ciro",
-    value:`€${METRICS.fmtNum(expectedRevenueEUR)}`,
-    sub:`€${METRICS.fmtNum(collectedEUR)} tahsil edildi`,
+    value:`€${fmtNum(METRICS.expectedRevenueEUR)}`,
+    sub:`€${fmtNum(METRICS.collectedEUR)} tahsil edildi`,
     icon:"M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",
     progress: METRICS.expectedRevenueEUR > 0 ? Math.round(METRICS.collectedEUR/METRICS.expectedRevenueEUR*100) : 0,
   },
