@@ -13334,7 +13334,7 @@ function useAuth() {
     async function init() {
       try {
         const _sessionP = sb.auth.getSession();
-        const _timeoutP = new Promise((_,rej) => setTimeout(() => rej(new Error('Auth timeout')), 8000));
+        const _timeoutP = new Promise((_,rej) => setTimeout(() => rej(new Error('Auth timeout')), 15000));
         const { data:{ session:s } } = await Promise.race([_sessionP, _timeoutP]);
         const st = s?.user ? await loadStaffData(s.user.id) : null;
         const newState = { session:s, staff:st, authLoading:false };
@@ -13385,9 +13385,18 @@ function useAuth() {
       }
       return { error:"Hatalı email veya şifre." };
     }
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) return { error: "Hatalı email veya şifre." };
-    return { error:null };
+    try {
+      const loginPromise = sb.auth.signInWithPassword({ email, password });
+      const timeoutPromise = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 15000));
+      const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
+      if (error) return { error: "Hatalı email veya şifre." };
+      return { error:null };
+    } catch(e) {
+      if (e.message === 'timeout') {
+        return { error: "Supabase bağlantısı kurulamadı. Lütfen Supabase dashboard'dan projenizin aktif olduğunu kontrol edin." };
+      }
+      return { error: e.message || "Giriş hatası" };
+    }
   }
 
   async function logout() {

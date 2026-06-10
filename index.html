@@ -311,7 +311,7 @@
 
   <script>
     // Version-based cache invalidation
-    var APP_V = 'bdb83f52';
+    var APP_V = '99dda105';
     try {
       var stored = localStorage.getItem('dese_v');
       if (stored && stored !== APP_V) {
@@ -320,7 +320,6 @@
           caches.keys().then(function(names) { names.forEach(function(n) { caches.delete(n); }); });
         }
         window.location.reload(true);
-        return;
       }
       localStorage.setItem('dese_v', APP_V);
     } catch(e) {}
@@ -394,7 +393,7 @@
   -->
 
   <!-- 1. Supabase JS — REQUIRED for live database connection -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script>
     // Expose supabase under the name getSB() expects
     if (window.supabase) {
@@ -408,7 +407,7 @@
 
 
   <!-- App (pre-transpiled JSX — no Babel needed in browser) -->
-  <script src="app.js?v=bdb83f52"></script>
+  <script src="app.js?v=99dda105"></script>
 
   <!-- Hide boot screen once React renders -->
   <script>
