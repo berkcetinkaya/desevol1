@@ -310,10 +310,24 @@
   </style>
 
   <script>
-    // Unregister any service workers that might serve stale content
+    // Version-based cache invalidation
+    var APP_V = 'bdb83f52';
+    try {
+      var stored = localStorage.getItem('dese_v');
+      if (stored && stored !== APP_V) {
+        localStorage.setItem('dese_v', APP_V);
+        if ('caches' in window) {
+          caches.keys().then(function(names) { names.forEach(function(n) { caches.delete(n); }); });
+        }
+        window.location.reload(true);
+        return;
+      }
+      localStorage.setItem('dese_v', APP_V);
+    } catch(e) {}
+    // Unregister service workers
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) { registration.unregister(); }
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
       });
     }
   </script>
@@ -394,12 +408,12 @@
 
 
   <!-- App (pre-transpiled JSX — no Babel needed in browser) -->
-  <script src="app.js?v=1781078336"></script>
+  <script src="app.js?v=bdb83f52"></script>
 
   <!-- Hide boot screen once React renders -->
   <script>
     (function() {
-      var maxWait = 12000; // 12s timeout
+      var maxWait = 5000; // 5s timeout
       var started = Date.now();
       function checkReady() {
         var root = document.getElementById('root');

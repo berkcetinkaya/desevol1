@@ -2735,8 +2735,8 @@ function LeadsPage({ onSelectLead }) {
 
   const counts = STATUS_TABS.reduce((acc, tab) => {
     acc[tab] = tab === "Tümü"
-      ? MOCK_LEADS.length
-      : MOCK_LEADS.filter(l => l.status === tab).length;
+      ? _allLeads.length
+      : _allLeads.filter(l => l.status === tab).length;
     return acc;
   }, {});
 
@@ -3855,14 +3855,14 @@ function QuotesPage({ onSelectQuote, onNewQuote }) {
   });
 
   const counts = TABS.reduce((acc,t) => {
-    acc[t] = t === "Tümü" ? MOCK_QUOTES.length : MOCK_QUOTES.filter(q=>q.status===t).length;
+    acc[t] = t === "Tümü" ? allQuotes.length : allQuotes.filter(q=>q.status===t).length;
     return acc;
   }, {});
 
-  const totalSent     = MOCK_QUOTES.filter(q=>q.status==="Gönderildi").length;
-  const totalApproved = MOCK_QUOTES.filter(q=>q.status==="Onaylandı").length;
-  const totalValue    = MOCK_QUOTES.filter(q=>q.status==="Onaylandı").reduce((s,q)=>s+q.total,0);
-  const convRate      = Math.round((totalApproved/MOCK_QUOTES.length)*100);
+  const totalSent     = allQuotes.filter(q=>q.status==="Gönderildi").length;
+  const totalApproved = allQuotes.filter(q=>q.status==="Onaylandı").length;
+  const totalValue    = allQuotes.filter(q=>q.status==="Onaylandı").reduce((s,q)=>s+q.total,0);
+  const convRate      = Math.round((totalApproved/allQuotes.length)*100);
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
@@ -3918,7 +3918,7 @@ function QuotesPage({ onSelectQuote, onNewQuote }) {
       {}
       <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14 }}>
         {[
-          { label:"Toplam Teklif",    val:MOCK_QUOTES.length, sub:"Tüm zamanlar", icon:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6" },
+          { label:"Toplam Teklif",    val:allQuotes.length, sub:"Tüm zamanlar", icon:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6" },
           { label:"Gönderildi",       val:totalSent,          sub:"Yanıt bekleniyor", icon:"M22 2L11 13 M22 2L15 22l-4-9-9-4 22-7z", alert:false },
           { label:"Onaylandı",        val:totalApproved,      sub:`€${totalValue} toplam değer`, icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", green:true },
           { label:"Dönüşüm Oranı",    val:`%${convRate}`,     sub:"Onaylanan / Toplam", icon:"M18 20V10M12 20V4M6 20v-6", gold:true },
@@ -4023,7 +4023,7 @@ function QuotesPage({ onSelectQuote, onNewQuote }) {
               display:"flex", alignItems:"center", justifyContent:"space-between",
             }}>
               <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif" }}>
-                {filtered.length} / {MOCK_QUOTES.length} teklif gösteriliyor
+                {filtered.length} / {allQuotes.length} teklif gösteriliyor
               </span>
             </div>
           </>
@@ -5704,15 +5704,15 @@ function ReservationsPage({ onSelect }) {
   });
 
   const counts = TABS.reduce((acc, t) => {
-    acc[t] = t === "Tümü" ? MOCK_RESERVATIONS.length
-      : MOCK_RESERVATIONS.filter(r => r.opStatus === t).length;
+    acc[t] = t === "Tümü" ? _allRes.length
+      : _allRes.filter(r => r.opStatus === t).length;
     return acc;
   }, {});
 
-  const upcoming   = MOCK_RESERVATIONS.filter(r => !["Tamamlandı","İptal"].includes(r.opStatus)).length;
-  const noGuide    = MOCK_RESERVATIONS.filter(r => !r.guide && r.opStatus !== "İptal").length;
-  const pendingPay = MOCK_RESERVATIONS.filter(r => r.payStatus === "Kapora Ödendi" || r.payStatus === "Ödeme Bekliyor").length;
-  const completed  = MOCK_RESERVATIONS.filter(r => r.opStatus === "Tamamlandı").length;
+  const upcoming   = _allRes.filter(r => !["Tamamlandı","İptal"].includes(r.opStatus)).length;
+  const noGuide    = _allRes.filter(r => !r.guide && r.opStatus !== "İptal").length;
+  const pendingPay = _allRes.filter(r => r.payStatus === "Kapora Ödendi" || r.payStatus === "Ödeme Bekliyor").length;
+  const completed  = _allRes.filter(r => r.opStatus === "Tamamlandı").length;
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
@@ -5951,7 +5951,7 @@ function ReservationsPage({ onSelect }) {
               display:"flex", alignItems:"center", justifyContent:"space-between",
             }}>
               <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif" }}>
-                {filtered.length} / {MOCK_RESERVATIONS.length} rezervasyon
+                {filtered.length} / {_allRes.length} rezervasyon
               </span>
             </div>
           </>
@@ -8447,7 +8447,7 @@ function PaymentsPage() {
     "Bekliyor":     _allPays.filter(p=>p.status==="Bekliyor").length,
     "Kısmi Ödendi": _allPays.filter(p=>p.status==="Kısmi Ödendi").length,
     "Tamamlandı":   _allPays.filter(p=>p.status==="Tamamlandı").length,
-    "İade":         MOCK_PAYMENTS.filter(p=>p.status==="İade Edildi").length,
+    "İade":         _allPays.filter(p=>p.status==="İade Edildi").length,
   };
 
   const eurPayments  = _allPays.filter(p=>p.currency==="EUR");
@@ -8532,7 +8532,7 @@ function PaymentsPage() {
             },
             {
               label:"Bekleyen Ödemeler", val:`€${fmtNum(totalPending)}`,
-              sub:`${MOCK_PAYMENTS.filter(p=>p.remaining>0&&p.currency==="EUR"&&!["İade Edildi"].includes(p.status)).length} rezervasyon`,
+              sub:`${_allPays.filter(p=>p.remaining>0&&p.currency==="EUR"&&!["İade Edildi"].includes(p.status)).length} rezervasyon`,
               icon:"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
               color:C.red, iconColor:C.red, iconBg:C.redBg,
               progress:null,
@@ -8682,7 +8682,7 @@ function PaymentsPage() {
           </div>
 
           {}
-          <PaySidebar payments={MOCK_PAYMENTS}/>
+          <PaySidebar payments={_allPays}/>
         </div>
       </div>
     </>
@@ -9918,7 +9918,7 @@ function ToursPage({ onSelect }) {
     = useRepo("tour", "getAll");
 
   const TABS = ["Tümü","Aktif","Taslak","Arşiv"];
-  const allTours = repoTours || MOCK_TOURS;
+  const allTours = repoTours ?? [];
   const filtered = allTours.filter(t => {
     const tabOk  = activeTab==="Tümü" || t.status===activeTab;
     const srchOk = !search ||
@@ -9927,8 +9927,8 @@ function ToursPage({ onSelect }) {
     return tabOk && srchOk;
   });
 
-  const counts = TABS.reduce((acc,t)=>({...acc, [t]: t==="Tümü"?MOCK_TOURS.length:MOCK_TOURS.filter(x=>x.status===t).length}),{});
-  const activeRevenue = MOCK_TOURS.filter(t=>t.status==="Aktif").reduce((s,t)=>s+t.usageCount,0);
+  const counts = TABS.reduce((acc,t)=>({...acc, [t]: t==="Tümü"?allTours.length:allTours.filter(x=>x.status===t).length}),{});
+  const activeRevenue = allTours.filter(t=>t.status==="Aktif").reduce((s,t)=>s+t.usageCount,0);
 
   return (
     <>
@@ -9984,9 +9984,9 @@ function ToursPage({ onSelect }) {
       {}
       <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14}}>
         {[
-          { label:"Toplam Tur",      val:MOCK_TOURS.length,                              icon:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10", color:C.text,  bg:C.ivoryDark },
-          { label:"Aktif Tur",       val:MOCK_TOURS.filter(t=>t.status==="Aktif").length,icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color:C.green, bg:C.greenBg },
-          { label:"Taslak",          val:MOCK_TOURS.filter(t=>t.status==="Taslak").length,icon:"M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z", color:C.amber, bg:C.amberBg },
+          { label:"Toplam Tur",      val:allTours.length,                              icon:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10", color:C.text,  bg:C.ivoryDark },
+          { label:"Aktif Tur",       val:allTours.filter(t=>t.status==="Aktif").length,icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color:C.green, bg:C.greenBg },
+          { label:"Taslak",          val:allTours.filter(t=>t.status==="Taslak").length,icon:"M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z", color:C.amber, bg:C.amberBg },
           { label:"Toplam Kullanım", val:`${activeRevenue} kez`,                         icon:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01", color:C.blue,  bg:C.blueBg },
         ].map((k,i)=>(
           <div key={i} style={{
@@ -10951,7 +10951,7 @@ function calculateDashboardMetrics(leads, reservations, payments, tasks, reminde
   const today  = _TODAY_STR;
   const todayISO = _TODAY_ISO;
 
-  const todayTours    = _res.filter(r => r.date===today || r.checkIn===todayISO);
+  const todayTours    = _res.filter(r => r.date===today || (r.checkIn && r.checkIn.startsWith(todayISO)));
   const upcomingRes   = _res.filter(r => !["Tamamlandı","İptal"].includes(r.opStatus));
   const openLeads     = _leads.filter(l => !["Onaylandı","İptal"].includes(l.status));
   const pendingPays   = _pays.filter(p => ["Bekliyor","Kısmi Ödendi"].includes(p.status));
@@ -12134,7 +12134,7 @@ function CustomersPage({ onSelectGuest }) {
     return tabOk && srchOk;
   });
 
-  const counts = TABS.reduce((acc,t)=>({...acc,[t]: t==="Tümü"?MOCK_GUESTS.length:MOCK_GUESTS.filter(tabMap[t]||tabMap["Tümü"]).length}),{});
+  const counts = TABS.reduce((acc,t)=>({...acc,[t]: t==="Tümü"?allGuests.length:allGuests.filter(tabMap[t]||tabMap["Tümü"]).length}),{});
 
   return (
     <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
@@ -12320,7 +12320,7 @@ function CustomersPage({ onSelectGuest }) {
               </tbody>
             </table>
             <div style={{padding:"11px 20px", background:C.ivory, borderTop:`1px solid ${C.borderLight}`}}>
-              <span style={{fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif"}}>{filtered.length} / {MOCK_GUESTS.length} misafir · Satıra tıklayarak profili görüntüleyin</span>
+              <span style={{fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif"}}>{filtered.length} / {allGuests.length} misafir · Satıra tıklayarak profili görüntüleyin</span>
             </div>
           </>
         )}
@@ -13136,6 +13136,9 @@ async function autoLog(entityType, entityId, action, description) {
 }
 
 function getActiveRepo(entity) {
+  // CRITICAL: useSupabase=true iken getSB()=null ise HİÇBİR repo dönme
+  // Bu sayede useRepo loading state'te kalır, mock data göstermez
+  if (AppConfig.useSupabase && getSB() === null) return null;
   const useReal = AppConfig.useSupabase && getSB() !== null;
   if(entity==='customer')   return useReal ? SupabaseCustomerRepo    : CustomerRepository;
   if(entity==='lead')       return useReal ? SupabaseLeadRepo        : LeadRepository;
@@ -13163,15 +13166,30 @@ function useRepo(entity, method, arg) {
         if (dead) return;
       }
       const repo = getActiveRepo(entity);
-      if (!repo || typeof repo[method] !== 'function') {
+      if (!repo) {
+        // Supabase henüz hazır değil — loading state kalsın, hata gösterme
+        if (!dead) setState(p => ({ ...p, loading: true, error: null }));
+        return;
+      }
+      if (typeof repo[method] !== 'function') {
         if (!dead) setState({data:null,loading:false,error:`Unknown: ${entity}.${method}`});
         return;
       }
       try {
         const data = await Promise.resolve(repo[method].call(repo, arg));
+        if (AppConfig.useSupabase) {
+          const count = Array.isArray(data) ? data.length : (data ? 1 : 0);
+          console.info(`[DeseTour] ${entity}.${method} → ${count} kayıt`);
+        }
         if (!dead) setState({data, loading:false, error:null});
       } catch(err) {
-        if (!dead) setState({data:null, loading:false, error:err.message||String(err)});
+        console.error('[useRepo]', entity, method, err.message || err);
+        // Mevcut veriyi silme — sadece error set et
+        if (!dead) setState(prev => ({
+          data: prev.data,        // ← mevcut veriyi koru
+          loading: false,
+          error: err.message || String(err)
+        }));
       }
     }
     run();
@@ -13315,7 +13333,9 @@ function useAuth() {
 
     async function init() {
       try {
-        const { data:{ session:s } } = await sb.auth.getSession();
+        const _sessionP = sb.auth.getSession();
+        const _timeoutP = new Promise((_,rej) => setTimeout(() => rej(new Error('Auth timeout')), 8000));
+        const { data:{ session:s } } = await Promise.race([_sessionP, _timeoutP]);
         const st = s?.user ? await loadStaffData(s.user.id) : null;
         const newState = { session:s, staff:st, authLoading:false };
         _authCache = newState;
