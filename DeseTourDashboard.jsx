@@ -7371,12 +7371,14 @@ function CalendarPage() {
                 Başka bir tarih seçin veya yeni rezervasyon ekleyin.
               </div>
             </div>
+          ) : isMobile ? (
+            <AgendaView events={visibleEvents} weekStart={weekStart}/>
           ) : view === "weekly" ? (
-            <WeeklyView weekStart={weekStart} events={CAL_EVENTS}/>
+            <WeeklyView weekStart={weekStart} events={visibleEvents} onSelect={setSelectedEvent}/>
           ) : view === "daily" ? (
-            <DailyView date={currentDay} events={CAL_EVENTS}/>
+            <DailyView date={currentDay} events={visibleEvents} onSelect={setSelectedEvent}/>
           ) : (
-            <MonthlyView monthStart={monthStart} events={CAL_EVENTS}/>
+            <MonthlyView monthStart={monthStart} events={visibleEvents}/>
           )}
         </div>
 
@@ -12323,7 +12325,7 @@ function CustomersPage({ onSelectGuest }) {
           </>
         )}
       </div>
-      {showNewGuest ? <NewGuestModal onClose={()=>setShowNewGuest(false)}/> : null}
+      {showNewGuest ? <NewGuestModal onClose={()=>setShowNewGuest(false)} onSuccess={()=>{ setShowNewGuest(false); reloadCusts&&reloadCusts(); }}/> : null}
     </div>
   );
 }
@@ -12636,6 +12638,7 @@ function MessagesPage() {
 }
 
 function NewGuestModal({ onClose }) {
+  const { getSourceId, sourceOptions } = useSources();
   const [busy, setBusy] = useState(false);
   const [name,setName]=useState(""); const [phone,setPhone]=useState(""); const [email,setEmail]=useState("");
   const [country,setCountry]=useState("Avustralya"); const [lang,setLang]=useState("İngilizce");
@@ -13153,7 +13156,7 @@ function useRepo(entity, method, arg) {
   const tick = useStore();
   useEffect(() => {
     let dead = false;
-    setState(p => ({ ...p, loading:true, error:null }));
+    setState(p => ({ ...p, loading: p.data === null, error:null }));
     async function run() {
       if (AppConfig.useSupabase && !getSB()) {
         await _sbReadyPromise;
@@ -13336,7 +13339,10 @@ function useAuth() {
       _notifyAuthListeners();
       // Login/logout sonrası tüm useRepo hook'larını yeniden tetikle
       if (s?.user) {
-        setTimeout(() => Store.notify(), 100);
+        // Sadece session ilk kez kurulduğunda notify et
+        if (!_authCache?.session?.user) {
+          setTimeout(() => Store.notify(), 100);
+        }
       }
     });
     return () => {
@@ -14029,18 +14035,10 @@ function NewLeadModal({ onClose, onSuccess }) {
     setBusy(true);
     try {
       // ── Resolve real source UUID from Supabase (mock IDs break FK) ──
-      let resolvedSourceId = null;
-      if (source) {
-        if (AppConfig.useSupabase) {
-          const sb = getSB();
-          if (sb) {
-            const { data:s1 } = await sb.from('sources').select('id').ilike('name',source).maybeSingle().catch(()=>({data:null}));
-            resolvedSourceId = s1?.id || null;
-          }
-        } else {
-          resolvedSourceId = DB.sources.find(s=>s.label===source)?.id || null;
-        }
-      }
+      // getSourceId() useSources hook'undan geliyor — doğru UUID döndürür
+      const resolvedSourceId = AppConfig.useSupabase
+        ? (getSourceId(source) || null)
+        : (DB.sources.find(s=>s.label===source)?.id || null);
 
       // ── Find or create customer ─────────────────────────────────────
       let custId = null;
