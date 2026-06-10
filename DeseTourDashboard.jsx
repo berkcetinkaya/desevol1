@@ -2024,6 +2024,7 @@ function KpiCard({ kpi }) {
 }
 
 function KpiRow() {
+  const { isMobile } = useBreakpoint();
   const { data:repoLeads, loading:kpiLoadL }  = useRepo("lead",        "getAll");
   const { data:repoRes,   loading:kpiLoadR }  = useRepo("reservation", "getAll");
   const { data:repoPays,  loading:kpiLoadP }  = useRepo("payment",     "getAll");
@@ -2413,6 +2414,7 @@ function ActivityFeed() {
 }
 
 function Dashboard() {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
       {}
@@ -3261,6 +3263,7 @@ function TravelCard({ lead }) {
 }
 
 function SalesCard({ lead }) {
+  const { isMobile } = useBreakpoint();
   const sm = STATUS_META[lead.status] || { color: C.textMuted, bg: C.ivoryDark };
   return (
     <DetailCard>
@@ -4328,6 +4331,7 @@ function QCardHead({ title, badge }) {
 }
 
 function QInfoRow({ label, value, mono, bold, gold, red }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{
       display:"flex", justifyContent:"space-between", alignItems:"flex-start",
@@ -4346,6 +4350,7 @@ function QInfoRow({ label, value, mono, bold, gold, red }) {
 }
 
 function QuoteDetailPage({ quoteId, onBack }) {
+  const { isMobile } = useBreakpoint();
   const _sp = safeParam(quoteId);
   if (_sp.invalid) return (
     <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:60,gap:16}}>
@@ -4815,6 +4820,7 @@ function FCheckList({ items, setItems, accent }) {
 }
 
 function ProposalPreview({ form, included, excluded }) {
+  const { isMobile } = useBreakpoint();
   const sym = form.currency==="TRY"?"₺":form.currency==="GBP"?"£":form.currency==="USD"?"$":"€";
   const total    = (form.pricePerPerson||0) * (form.guestCount||1);
   const discount = Math.round(total * (form.discountPct||0) / 100);
@@ -5104,6 +5110,7 @@ function FormSections({
   included, setIncluded, excluded, setExcluded,
   sym, net, deposit, remaining,
 }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{display:"flex", flexDirection:"column", gap:24}}>
 
@@ -5983,6 +5990,7 @@ function RCardHead({ title, accent, right }) {
 }
 
 function RInfoRow({ label, value, mono, bold, alert, icon }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{
       display:"flex", justifyContent:"space-between", alignItems:"flex-start",
@@ -6183,6 +6191,7 @@ function ResQuickActions({ res }) {
 }
 
 function ReservationDetailPage({ resId, onBack }) {
+  const { isMobile } = useBreakpoint();
   const _sp = safeParam(resId);
   if (_sp.invalid) return (
     <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:60,gap:16}}>
@@ -6953,6 +6962,7 @@ function WeeklyView({ weekStart, events, onSelect }) {
 }
 
 function DailyView({ date, events, onSelect }) {
+  const { isMobile } = useBreakpoint();
   const dayEvents = events.filter(e => isSameDay(e.date, date));
   const hours = Array.from({length:16}, (_,i)=>i+7);
 
@@ -7191,6 +7201,7 @@ function AgendaView({ events, weekStart }) {
   );
 }
 function CalendarPage() {
+  const { isMobile } = useBreakpoint();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [view, setView]         = useState("weekly");   // "daily" | "weekly" | "monthly"
   const [weekOffset, setWeekOffset] = useState(0);
@@ -8084,6 +8095,7 @@ function PctBar({ pct, color }) {
 }
 
 function PaymentDrawer({ payment, onClose }) {
+  const { isMobile } = useBreakpoint();
   if (!payment) return null;
   const pct = payment.total > 0 ? Math.round(payment.paid / payment.total * 100) : 0;
   const overdue = payment.dueDateRaw < 0 && payment.status !== "Tamamlandı" && payment.status !== "İade Edildi";
@@ -9451,6 +9463,7 @@ function TourQuotePreview({ tour, paxCount, incItems }) {
 }
 
 function TourDetailPage({ tourId, onBack }) {
+  const { isMobile } = useBreakpoint();
   const _sp = safeParam(tourId);
   if (_sp.invalid) return (
     <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:60,gap:16}}>
@@ -10160,6 +10173,7 @@ function SToggle({ on, onChange }) {
 }
 
 function SField({ label, hint, children }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{padding:"14px 0", borderBottom:`1px solid ${C.borderLight}`, display:"flex", alignItems:"flex-start", gap:24}}>
       <div style={{minWidth: isMobile ? 0 : 200, flexShrink:0, paddingTop:1}}>
@@ -11631,6 +11645,7 @@ function GStatusBadge({ status, small }) {
 }
 
 function GSection({ title, icon, children, noPad }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden"}}>
       <div style={{
@@ -11648,6 +11663,7 @@ function GSection({ title, icon, children, noPad }) {
 }
 
 function GInfoRow({ label, value, mono, icon }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{
       display:"flex", justifyContent:"space-between", alignItems:"flex-start",
@@ -11706,6 +11722,7 @@ function GuestTimeline({ events }) {
 }
 
 function GuestDetailPage({ guestId, onBack, onNavigate }) {
+  const { isMobile } = useBreakpoint();
   const _sp = safeParam(guestId);
   if (_sp.invalid) return (
     <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:60,gap:16}}>
@@ -12413,6 +12430,7 @@ function ConvItem({ conv, active, onClick }) {
 }
 
 function ConvDetail({ conv }) {
+  const { isMobile } = useBreakpoint();
   const cust = getCustomerById(conv.customerId);
   const lead = conv.leadId ? getLeadById(conv.leadId) : null;
   const res  = conv.resId  ? getReservationById(conv.resId)  : null;
