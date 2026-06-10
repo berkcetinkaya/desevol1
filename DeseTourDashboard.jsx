@@ -12921,6 +12921,7 @@ function getSB() {
       auth: { persistSession:true, autoRefreshToken:true },
       global: { headers: { 'x-app-name':'dese-tour-ops' } },
     });
+    if (_sbReadyResolve) { _sbReadyResolve(_sb); _sbReadyResolve = null; }
     return _sb;
   } catch(e) { console.warn('[DeseTour]', e.message); return null; }
 }
@@ -13333,6 +13334,10 @@ function useAuth() {
       _authCache = newState;
       setAuthState(newState);
       _notifyAuthListeners();
+      // Login/logout sonrası tüm useRepo hook'larını yeniden tetikle
+      if (s?.user) {
+        setTimeout(() => Store.notify(), 100);
+      }
     });
     return () => {
       subscription?.unsubscribe?.();
@@ -14051,7 +14056,12 @@ function NewLeadModal({ onClose, onSuccess }) {
             name, phone, email, country:"Diğer", language:"İngilizce",
             importType:"manual", sourceId: resolvedSourceId,
           });
-          if (custErr) throw new Error("Müşteri oluşturulamadı: " + custErr);
+          if (custErr) {
+          const msg = String(custErr).includes('violates row-level security')
+            ? "Yetki hatası: Lütfen URGENT_FIX_RLS.sql dosyasını Supabase SQL Editor'da çalıştırın."
+            : "Müşteri oluşturulamadı: " + custErr;
+          throw new Error(msg);
+        }
           custId = newCust?.id || null;
         }
       } else {
@@ -14068,7 +14078,12 @@ function NewLeadModal({ onClose, onSuccess }) {
         paxAdult: parseInt(adults)||2, travelStart: date||null,
         currency, notes, sourceId: resolvedSourceId, importType:"manual",
       });
-      if (error) throw new Error("Talep oluşturulamadı: " + error);
+      if (error) {
+        const msg = String(error).includes('violates row-level security') || String(error).includes('permission denied')
+          ? "Yetki hatası: Supabase'de staff_users tablosuna giriş yapmanız gerekiyor. URGENT_FIX_RLS.sql dosyasını çalıştırın."
+          : "Talep oluşturulamadı: " + error;
+        throw new Error(msg);
+      }
 
       showToast("Talep başarıyla oluşturuldu.");
       onSuccess && onSuccess(newLead);
@@ -15717,6 +15732,8 @@ function ResetPasswordPage() {
 function App() {
   const { base, param, navigate, path } = useHashRouter();
   const { isMobile, isTablet } = useBreakpoint();
+  const { session } = useContext(AuthContext) || {};
+  const sessionKey = session?.user?.id || 'anon';
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
@@ -15859,7 +15876,7 @@ function App() {
         transition:"margin-left 0.22s cubic-bezier(0.4,0,0.2,1)",
         overflowX:"hidden",
       }}>
-        <div className="fade" key={path}>
+        <div className="fade" key={path + "-" + sessionKey}>
           {renderPage()}
         </div>
       </main>
