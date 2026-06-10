@@ -1970,11 +1970,13 @@ const KPI_DATA = [
 ]; // values derived from DB via METRICS
 
 function KpiCard({ kpi }) {
+  const { isMobile } = useBreakpoint();
   return (
     <div style={{
       background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-      padding:"18px 20px", display:"flex", flexDirection:"column", gap:12,
-      position:"relative", overflow:"hidden",
+      padding: isMobile ? "12px 14px" : "18px 20px",
+      display:"flex", flexDirection:"column", gap: isMobile ? 8 : 12,
+      position:"relative", overflow:"hidden", minWidth:0,
     }}>
       {}
       <div style={{display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:10}}>
@@ -2066,7 +2068,7 @@ function KpiRow() {
     },
   ];
   return (
-    <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:14}}>
+    <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap:14}}>
       {kpis.map((k,i)=><KpiCard key={i} kpi={k}/>)}
     </div>
   );
@@ -2412,7 +2414,7 @@ function ActivityFeed() {
 
 function Dashboard() {
   return (
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
       {}
       <Welcome/>
 
@@ -2464,6 +2466,7 @@ const STATUS_TABS = [
 const SOURCE_FILTERS = ["Tümü","Booking","WhatsApp","Website","Telefon","Instagram","Manuel","Tripadvisor"];
 
 function SourceBadge({ source }) {
+  const { isMobile } = useBreakpoint();
   const m = SOURCE_META[source] || SOURCE_META["Manuel"];
   return (
     <span style={{
@@ -2707,6 +2710,7 @@ function EmptyLeads() {
 }
 
 function LeadsPage({ onSelectLead }) {
+  const { isMobile } = useBreakpoint();
   const [showNewLead, setShowNewLead] = useState(false);
   const [activeTab, setActiveTab] = useState("Tümü");
   const [activeSource, setActiveSource] = useState("Tümü");
@@ -2735,7 +2739,7 @@ function LeadsPage({ onSelectLead }) {
   }, {});
 
   return (
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
@@ -3279,7 +3283,7 @@ function SalesCard({ lead }) {
         </div>
 
         {}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
           {[
             { label: "Teklif Tutarı", val: lead.quoteAmount, color: C.text },
             { label: "Kapora",        val: lead.deposit,      color: C.amber },
@@ -3829,6 +3833,7 @@ function QuoteRow({ q, isLast, onSelect }) {
 }
 
 function QuotesPage({ onSelectQuote, onNewQuote }) {
+  const { isMobile } = useBreakpoint();
   const [activeTab, setActiveTab] = useState("Tümü");
   const [search, setSearch] = useState("");
   const { data:repoQuotes, loading:quotesLoading, error:quotesError, reload:reloadQuotes }
@@ -3908,7 +3913,7 @@ function QuotesPage({ onSelectQuote, onNewQuote }) {
       </div>
 
       {}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14 }}>
         {[
           { label:"Toplam Teklif",    val:MOCK_QUOTES.length, sub:"Tüm zamanlar", icon:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6" },
           { label:"Gönderildi",       val:totalSent,          sub:"Yanıt bekleniyor", icon:"M22 2L11 13 M22 2L15 22l-4-9-9-4 22-7z", alert:false },
@@ -4328,7 +4333,7 @@ function QInfoRow({ label, value, mono, bold, gold, red }) {
       display:"flex", justifyContent:"space-between", alignItems:"flex-start",
       padding:"10px 20px", borderBottom:`1px solid ${C.borderLight}`,
     }}>
-      <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", flexShrink:0, minWidth:110, paddingTop:1 }}>{label}</span>
+      <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", flexShrink:0, minWidth: isMobile ? 0 : 110, paddingTop:1 }}>{label}</span>
       <span style={{
         fontSize: bold ? 15 : 13,
         color: gold ? C.gold : red ? C.red : C.text,
@@ -4450,7 +4455,7 @@ function QuoteDetailPage({ quoteId, onBack }) {
       </div>
 
       {}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 280px", gap:18, alignItems:"start" }}>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr" : "1fr 1fr 280px", gap:18, alignItems:"start" }}>
 
         {}
         <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
@@ -4568,7 +4573,7 @@ function QuoteDetailPage({ quoteId, onBack }) {
           {}
           <QCard>
             <QCardHead title="Teklif Durumu"/>
-            <div style={{ padding:"16px 20px" }}>
+            <div style={{ padding: isMobile ? "12px 14px" : "16px 20px" }}>
               {Object.entries(QUOTE_STATUS).map(([s,m],i,arr)=>{
                 const on = s === q.status;
                 return (
@@ -4904,7 +4909,7 @@ function ProposalPreview({ form, included, excluded }) {
 
         {}
         <div style={{
-          display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr",
+          display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr",
           gap:0, marginBottom:28,
           border:`1px solid #E4DDD0`, borderRadius:8, overflow:"hidden",
         }}>
@@ -4931,7 +4936,7 @@ function ProposalPreview({ form, included, excluded }) {
         </div>
 
         {}
-        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 200px", gap:12, marginBottom:28}}>
+        <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr" : "1fr 1fr 200px", gap:12, marginBottom:28}}>
 
           {}
           <div style={{gridColumn:"1/2"}}>
@@ -4986,7 +4991,7 @@ function ProposalPreview({ form, included, excluded }) {
         <div style={{height:1, background:"linear-gradient(90deg,#C9A84C,transparent)", marginBottom:24}}/>
 
         {}
-        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:20, marginBottom:24}}>
+        <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap:20, marginBottom:24}}>
           {}
           <div>
             <div style={{fontSize:10, color:"#C9A84C", letterSpacing:"0.12em", textTransform:"uppercase", fontWeight:600, marginBottom:10}}>INCLUDED SERVICES</div>
@@ -5034,7 +5039,7 @@ function ProposalPreview({ form, included, excluded }) {
         )}
 
         {}
-        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16, marginBottom:0}}>
+        <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap:16, marginBottom:0}}>
           <div>
             <div style={{fontSize:9.5, color:"#C9A84C", textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:600, marginBottom:8}}>TERMS & NOTES</div>
             {[
@@ -5066,7 +5071,7 @@ function ProposalPreview({ form, included, excluded }) {
       {}
       <div style={{
         background:"#1B2D4F", padding:"14px 36px",
-        display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr",
+        display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr",
         gap:12,
       }}>
         {[
@@ -5150,7 +5155,7 @@ function FormSections({
       {}
       <div>
         <FSectionHead n="3" title="Fiyatlandırma"/>
-        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:14}}>
+        <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap:12, marginBottom:14}}>
           <div>
             <FLabel>Kişi Başı Fiyat</FLabel>
             <div style={{position:"relative"}}>
@@ -5188,7 +5193,7 @@ function FormSections({
 
         {}
         <div style={{
-          display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr",
+          display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr",
           gap:10, padding:"14px 16px",
           background:"#1B2D4F", borderRadius:10,
         }}>
@@ -5672,6 +5677,7 @@ function NewReservationModal({ onClose, onSuccess }) {
   );
 }
 function ReservationsPage({ onSelect }) {
+  const { isMobile } = useBreakpoint();
   const [showNewRes, setShowNewRes] = useState(false);
   const [activeTab, setActiveTab] = useState("Tümü");
   const [search, setSearch]       = useState("");
@@ -5751,7 +5757,7 @@ function ReservationsPage({ onSelect }) {
       </div>
 
       {}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14 }}>
         {[
           { label:"Aktif Rezervasyon",   val:upcoming,  icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color:C.blue, bg:C.blueBg },
           { label:"Rehber Atanmadı",     val:noGuide,   icon:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M23 21v-2a4 4 0 00-3-3.87 M16 3.13a4 4 0 010 7.75", color:C.red, bg:C.redBg },
@@ -5984,7 +5990,7 @@ function RInfoRow({ label, value, mono, bold, alert, icon }) {
     }}>
       <span style={{
         fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif",
-        flexShrink:0, minWidth:130, paddingTop:1,
+        flexShrink:0, minWidth: isMobile ? 0 : 130, paddingTop:1,
         display:"flex", alignItems:"center", gap:5,
       }}>
         {icon && <RIc d={icon} size={12} sw={1.5}/>}
@@ -6268,7 +6274,7 @@ function ReservationDetailPage({ resId, onBack }) {
             <RInfoRow label="Telefon"  value={r.phone} mono icon="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.09-1.09a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
             <RInfoRow label="E-posta"  value={r.email} mono icon="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"/>
             <div style={{ padding:"10px 20px", display:"flex", gap:8, alignItems:"center" }}>
-              <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", minWidth:130 }}>Ülke</span>
+              <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", minWidth: isMobile ? 0 : 130 }}>Ülke</span>
               <span style={{ fontSize:13, color:C.textMid, fontFamily:"'DM Sans',sans-serif" }}>{r.flag} {r.country}</span>
             </div>
           </RCard>
@@ -6289,7 +6295,7 @@ function ReservationDetailPage({ resId, onBack }) {
             <RInfoRow label="Saat"        value={r.time} icon="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             <RInfoRow label="Süre"        value={r.duration}/>
             <div style={{ padding:"10px 20px", display:"flex", gap:8, alignItems:"center", borderBottom:`1px solid ${C.borderLight}` }}>
-              <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", minWidth:130, display:"flex", alignItems:"center", gap:5 }}>
+              <span style={{ fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", minWidth: isMobile ? 0 : 130, display:"flex", alignItems:"center", gap:5 }}>
                 <RIc d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2 M23 21v-2a4 4 0 00-3-3.87 M16 3.13a4 4 0 010 7.75" size={12} sw={1.5}/>
                 Kişi Sayısı
               </span>
@@ -6592,7 +6598,7 @@ function isSameDay(a, b) {
 
 function isToday(d) { return isSameDay(d, CAL_TODAY); }
 
-function EventCard({ ev, compact }) {
+function EventCard({ ev, compact, onSelect }) {
   const [hov, setHov] = useState(false);
   const col = CAL_OP_COLOR[ev.opStatus] || CAL_OP_COLOR["Hazırlanıyor"];
   const noGuide  = !ev.guideOk;
@@ -6603,6 +6609,7 @@ function EventCard({ ev, compact }) {
     <div
       onMouseEnter={()=>setHov(true)}
       onMouseLeave={()=>setHov(false)}
+      onClick={()=>onSelect&&onSelect(ev)}
       style={{
         background:C.white,
         border:`1.5px solid ${col.border}`,
@@ -6839,7 +6846,7 @@ function CalSidebar({ todayEvents, weekEvents }) {
   );
 }
 
-function WeeklyView({ weekStart, events }) {
+function WeeklyView({ weekStart, events, onSelect }) {
   const days = Array.from({length:7}, (_,i) => {
     const d = new Date(weekStart);
     d.setDate(d.getDate() + i);
@@ -6945,13 +6952,13 @@ function WeeklyView({ weekStart, events }) {
   );
 }
 
-function DailyView({ date, events }) {
+function DailyView({ date, events, onSelect }) {
   const dayEvents = events.filter(e => isSameDay(e.date, date));
   const hours = Array.from({length:16}, (_,i)=>i+7);
 
   return (
     <div style={{
-      display:"grid", gridTemplateColumns:"52px 1fr",
+      display:"grid", gridTemplateColumns:isMobile ? "1fr" : "52px 1fr",
       background:C.white, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden",
     }}>
       {}
@@ -6992,7 +6999,7 @@ function DailyView({ date, events }) {
           }}>
             {slotEvents.map((ev,i) => (
               <div key={i} style={{ width:"calc(50% - 4px)", maxWidth:380 }}>
-                <EventCard ev={ev} compact={false}/>
+                <EventCard ev={ev} compact={false} onSelect={onSelect}/>
               </div>
             ))}
           </div>,
@@ -7022,7 +7029,7 @@ function MonthlyView({ monthStart, events }) {
       background:C.white, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden",
     }}>
       {}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", borderBottom:`1px solid ${C.border}` }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(7, minmax(80px, 1fr))", borderBottom:`1px solid ${C.border}` }}>
         {TR_DAYS_FULL.map(d => (
           <div key={d} style={{
             padding:"10px 0", textAlign:"center",
@@ -7036,7 +7043,7 @@ function MonthlyView({ monthStart, events }) {
       </div>
 
       {}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)" }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(7, minmax(80px, 1fr))" }}>
         {cells.map((cell,i) => {
           const cellEvents = events.filter(e => isSameDay(e.date, cell));
           const today = isToday(cell);
@@ -7090,7 +7097,101 @@ function MonthlyView({ monthStart, events }) {
   );
 }
 
+
+/* ── AgendaView: mobile calendar ──────────────────────────────── */
+function AgendaView({ events, weekStart }) {
+  const days = Array.from({length:7}, (_,i) => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+  const TR_DAYS = ["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
+  const TR_MONTHS = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:0}}>
+      {days.map((day, di) => {
+        const dayEvents = events.filter(e => {
+          const ed = new Date(e.date); ed.setHours(0,0,0,0);
+          return ed.getTime() === day.getTime();
+        });
+        const isToday = day.getTime() === today.getTime();
+        return (
+          <div key={di} style={{borderBottom:`1px solid ${C.border}`}}>
+            <div style={{
+              padding:"10px 16px",
+              background: isToday ? C.navyDeep : C.ivoryDark,
+              display:"flex", alignItems:"center", gap:10,
+            }}>
+              <div style={{
+                width:32, height:32, borderRadius:8,
+                background: isToday ? C.gold : C.border,
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontSize:13, fontWeight:700, color: isToday ? "#fff" : C.text,
+              }}>{day.getDate()}</div>
+              <div>
+                <div style={{fontSize:12, fontWeight:600, color: isToday ? C.ivory : C.text,
+                  fontFamily:"'DM Sans',sans-serif"}}>
+                  {TR_DAYS[day.getDay()]} {day.getDate()} {TR_MONTHS[day.getMonth()]}
+                </div>
+                {dayEvents.length > 0 && (
+                  <div style={{fontSize:11, color: isToday ? "rgba(248,245,238,0.7)" : C.textMuted}}>
+                    {dayEvents.length} tur
+                  </div>
+                )}
+              </div>
+            </div>
+            {dayEvents.length === 0 ? (
+              <div style={{padding:"10px 16px", fontSize:12.5, color:C.textFaint,
+                fontFamily:"'DM Sans',sans-serif", fontStyle:"italic"}}>
+                Planlanan tur yok
+              </div>
+            ) : (
+              <div>
+                {dayEvents.map((ev, ei) => (
+                  <div key={ei} style={{
+                    padding:"12px 16px",
+                    borderTop: ei > 0 ? `1px solid ${C.borderLight}` : "none",
+                    display:"flex", gap:12, alignItems:"flex-start",
+                  }}>
+                    <div style={{
+                      fontSize:13, fontWeight:700, color:C.navy, minWidth:44,
+                      fontFamily:"'DM Sans',sans-serif",
+                    }}>
+                      {ev.date ? `${String(ev.date.getHours()).padStart(2,'0')}:${String(ev.date.getMinutes()).padStart(2,'0')}` : "—"}
+                    </div>
+                    <div style={{flex:1, minWidth:0}}>
+                      <div style={{fontSize:13.5, fontWeight:600, color:C.text,
+                        fontFamily:"'DM Sans',sans-serif", overflow:"hidden",
+                        textOverflow:"ellipsis", whiteSpace:"nowrap"}}>
+                        {ev.tour || ev.title || "Tur"}
+                      </div>
+                      <div style={{fontSize:12, color:C.textMuted, marginTop:2,
+                        fontFamily:"'DM Sans',sans-serif"}}>
+                        {ev.guest || "—"} · {ev.pax || 1} kişi
+                        {ev.guide ? ` · ${ev.guide}` : ""}
+                      </div>
+                    </div>
+                    <div style={{
+                      fontSize:10.5, padding:"3px 8px", borderRadius:99,
+                      background:C.ivoryDark, color:C.textMid, whiteSpace:"nowrap",
+                      fontFamily:"'DM Sans',sans-serif",
+                    }}>
+                      {ev.opStatus || "Aktif"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 function CalendarPage() {
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [view, setView]         = useState("weekly");   // "daily" | "weekly" | "monthly"
   const [weekOffset, setWeekOffset] = useState(0);
   const [dayOffset, setDayOffset]   = useState(0);
@@ -7167,7 +7268,7 @@ function CalendarPage() {
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px",
+        padding: isMobile ? "14px 16px" : "20px 24px",
         display:"flex", alignItems:"center", justifyContent:"space-between", gap:16,
       }}>
         <div>
@@ -7206,7 +7307,7 @@ function CalendarPage() {
             <div style={{
               padding:"7px 16px", fontFamily:"'DM Sans',sans-serif",
               fontSize:13, fontWeight:500, color:C.text,
-              minWidth:180, textAlign:"center", background:C.white,
+              minWidth: isMobile ? 0 : 180, textAlign:"center", background:C.white,
             }}>{navLabel()}</div>
             <button onClick={goForward} style={{
               padding:"7px 11px", border:"none", background:C.white,
@@ -7242,7 +7343,7 @@ function CalendarPage() {
       </div>
 
       {}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 280px", gap:20, alignItems:"start" }}>
+      <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : isMobile ? "1fr" : "1fr 280px", gap:20, alignItems:"start" }}>
 
         {}
         <div>
@@ -7271,7 +7372,47 @@ function CalendarPage() {
         {}
         <CalSidebar todayEvents={todayEvents} weekEvents={visibleEvents}/>
       </div>
+
+      {selectedEvent ? (
+        <div style={{
+          position:"fixed", inset:0, zIndex:1000,
+          background:"rgba(13,27,62,0.5)", backdropFilter:"blur(3px)",
+          display:"flex", alignItems:"center", justifyContent:"center", padding:16,
+        }} onClick={()=>setSelectedEvent(null)}>
+          <div onClick={e=>e.stopPropagation()} style={{
+            background:C.white, borderRadius:14, padding:"24px 28px",
+            maxWidth:440, width:"100%", boxShadow:"0 20px 60px rgba(0,0,0,0.3)",
+          }}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div style={{fontSize:17,fontWeight:700,color:C.text,fontFamily:"'Playfair Display',serif"}}>
+                {selectedEvent.tour || selectedEvent.title || "Tur Detayı"}
+              </div>
+              <button onClick={()=>setSelectedEvent(null)}
+                style={{border:"none",background:"none",cursor:"pointer",fontSize:20,color:C.textMuted,lineHeight:1}}>×</button>
+            </div>
+            {[
+              {label:"Misafir",     val:selectedEvent.guest  ||"—"},
+              {label:"Tarih",       val:selectedEvent.date?.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})||"—"},
+              {label:"Kişi Sayısı", val:selectedEvent.pax    ||"—"},
+              {label:"Rehber",      val:selectedEvent.guide  ||"Atanmadı"},
+            ].map((row,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:`1px solid ${C.borderLight}`}}>
+                <span style={{fontSize:12.5,color:C.textMuted,fontFamily:"'DM Sans',sans-serif"}}>{row.label}</span>
+                <span style={{fontSize:12.5,fontWeight:600,color:C.text,fontFamily:"'DM Sans',sans-serif"}}>{row.val}</span>
+              </div>
+            ))}
+            {selectedEvent.id && !isMockId(selectedEvent.id) && typeof NAV_REF.fn === "function" && (
+              <button onClick={()=>{setSelectedEvent(null);NAV_REF.fn("/reservations/"+selectedEvent.id);}}
+                style={{marginTop:16,width:"100%",padding:"10px 0",borderRadius:8,border:"none",
+                  background:C.navy,color:C.white,cursor:"pointer",fontSize:13.5,fontWeight:600}}>
+                Rezervasyona Git →
+              </button>
+            )}
+          </div>
+        </div>
+      ) : null}
     </div>
+
   );
 }
 
@@ -7608,6 +7749,7 @@ function TaskSidebar({ tasks }) {
 }
 
 function TasksPage() {
+  const { isMobile } = useBreakpoint();
   const [showNewTask, setShowNewTask] = useState(false);
   const [_taskTick, setTaskTick] = useState(0);
   const [activeTab, setActiveTab]   = useState("Tümü");
@@ -7660,12 +7802,12 @@ function TasksPage() {
   return (
     <>
     {showNewTask ? (<NewTaskModal onClose={()=>{ setShowNewTask(false); reloadTasks && reloadTasks(); }}/>) : null}
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px",
+        padding: isMobile ? "14px 16px" : "20px 24px",
         display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:20,
       }}>
         <div>
@@ -7710,7 +7852,7 @@ function TasksPage() {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14}}>
+      <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14}}>
         {[
           {
             label:"Bugünkü Görevler", val:todayCount,
@@ -7760,7 +7902,7 @@ function TasksPage() {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"1fr 280px", gap:20, alignItems:"start"}}>
+      <div style={{display:"grid", gridTemplateColumns: isMobile ? "1fr" : isMobile ? "1fr" : "1fr 280px", gap:20, alignItems:"start"}}>
 
         {}
         <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden"}}>
@@ -8006,7 +8148,7 @@ function PaymentDrawer({ payment, onClose }) {
         <div style={{
           background:C.ivory, borderBottom:`1px solid ${C.border}`,
           padding:"18px 22px",
-          display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12,
+          display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap:12,
         }}>
           {[
             { label:"Toplam Tutar", val:fmtMoney(payment.total, payment.currency), big:true, color:C.text },
@@ -8263,6 +8405,7 @@ function PaySidebar({ payments }) {
 }
 
 function PaymentsPage() {
+  const { isMobile } = useBreakpoint();
   const [showNewPayment, setShowNewPayment] = useState(false);
   const [_payTick, setPayTick] = useState(0);
   const [activeTab, setActiveTab] = useState("Tümü");
@@ -8308,12 +8451,12 @@ function PaymentsPage() {
 
       {payLoading  ? <LoadingState label="Ödemeler yükleniyor…"/> : null}
       {payError ? <ErrorState message={payError} onRetry={reloadPays}/> : null}
-      <div style={{display:"flex", flexDirection:"column", gap:20}}>
+      <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
         {}
         <div style={{
           background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-          padding:"20px 24px",
+          padding: isMobile ? "14px 16px" : "20px 24px",
           display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:20,
         }}>
           <div>
@@ -8357,7 +8500,7 @@ function PaymentsPage() {
         </div>
 
         {}
-        <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14}}>
+        <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14}}>
           {[
             {
               label:"Beklenen Toplam Gelir", val:`€${fmtNum(totalExp)}`,
@@ -8417,7 +8560,7 @@ function PaymentsPage() {
         </div>
 
         {}
-        <div style={{display:"grid", gridTemplateColumns:"1fr 300px", gap:20, alignItems:"start"}}>
+        <div style={{display:"grid", gridTemplateColumns: isMobile ? "1fr" : isMobile ? "1fr" : "1fr 300px", gap:16, alignItems:"start"}}>
 
           {}
           <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden"}}>
@@ -8891,6 +9034,7 @@ function RemSidebar() {
 }
 
 function RemindersPage() {
+  const { isMobile } = useBreakpoint();
   const [showNewReminder, setShowNewReminder] = useState(false);
   const [_remTick, setRemTick] = useState(0);
   const [activeTab, setActiveTab] = useState("Tümü");
@@ -8946,12 +9090,12 @@ function RemindersPage() {
   return (
     <>
     {showNewReminder ? (<NewReminderModal onClose={()=>{ setShowNewReminder(false); setRemTick(n=>n+1); }}/>) : null}
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px",
+        padding: isMobile ? "14px 16px" : "20px 24px",
         display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:20,
       }}>
         <div>
@@ -8995,7 +9139,7 @@ function RemindersPage() {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14}}>
+      <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14}}>
         {[
           { label:"Açık Hatırlatmalar",  val:openCount,   icon:"M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0", color:C.blue,  bg:C.blueBg,  sub:`${reminders.length} toplam` },
           { label:"Acil Uyarılar",       val:acilCount,   icon:"M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z", color:C.red,   bg:C.redBg,   sub:"Hemen ilgilenilmeli" },
@@ -9022,7 +9166,7 @@ function RemindersPage() {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"1fr 300px", gap:20, alignItems:"start"}}>
+      <div style={{display:"grid", gridTemplateColumns: isMobile ? "1fr" : isMobile ? "1fr" : "1fr 300px", gap:20, alignItems:"start"}}>
 
         {}
         <div style={{background:C.white, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden"}}>
@@ -9415,7 +9559,7 @@ function TourDetailPage({ tourId, onBack }) {
   }
 
   return (
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
@@ -9594,7 +9738,7 @@ function TourDetailPage({ tourId, onBack }) {
               ) : (
                 <div>
                   <div style={{fontSize:10.5, fontWeight:600, color:C.textFaint, textTransform:"uppercase", letterSpacing:"0.09em", fontFamily:"'DM Sans',sans-serif", marginBottom:8}}>Kişi Bazlı Fiyat Tablosu</div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8}}>
+                  <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:8}}>
                     {Object.entries(tiers).map(([n,p])=>(
                       <div key={n} style={{
                         background:C.ivory, borderRadius:8, padding:"10px 12px",
@@ -9634,7 +9778,7 @@ function TourDetailPage({ tourId, onBack }) {
                   </div>
                   <span style={{fontSize:13.5, fontWeight:600, color:C.text, fontFamily:"'Playfair Display',serif"}}>{sec.title}</span>
                 </div>
-                <div style={{padding:"16px 20px"}}>
+                <div style={{padding: isMobile ? "12px 14px" : "16px 20px"}}>
                   <TourChecklist items={sec.items} setItems={sec.setItems} accent={sec.accent}/>
                 </div>
               </div>
@@ -9650,7 +9794,7 @@ function TourDetailPage({ tourId, onBack }) {
               <span style={{fontSize:13.5, fontWeight:600, color:C.text, fontFamily:"'Playfair Display',serif"}}>Operasyon Ayarları</span>
             </div>
             <div style={{padding:"20px"}}>
-              <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:16}}>
+              <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap:12, marginBottom:16}}>
                 {[
                   {k:"pickup", label:"Pickup Gerekli", icon:"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z M12 10a1 1 0 100-2 1 1 0 000 2z"},
                   {k:"vehicle", label:"Araç Gerekli",  icon:"M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z M13 17H9m4 0h2m2-5H3M5 12V5h14v7"},
@@ -9751,6 +9895,7 @@ function TourDetailPage({ tourId, onBack }) {
 }
 
 function ToursPage({ onSelect }) {
+  const { isMobile } = useBreakpoint();
   const [showNewTour, setShowNewTour] = useState(false);
   const [activeTab, setActiveTab] = useState("Tümü");
   const [search, setSearch]       = useState("");
@@ -9773,12 +9918,12 @@ function ToursPage({ onSelect }) {
   return (
     <>
     {showNewTour ? (<NewTourModal onClose={()=>{ setShowNewTour(false); reloadTours&&reloadTours(); }}/>) : null}
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px",
+        padding: isMobile ? "14px 16px" : "20px 24px",
         display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:20,
       }}>
         <div>
@@ -9822,7 +9967,7 @@ function ToursPage({ onSelect }) {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14}}>
+      <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:14}}>
         {[
           { label:"Toplam Tur",      val:MOCK_TOURS.length,                              icon:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10", color:C.text,  bg:C.ivoryDark },
           { label:"Aktif Tur",       val:MOCK_TOURS.filter(t=>t.status==="Aktif").length,icon:"M9 11l3 3L22 4 M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color:C.green, bg:C.greenBg },
@@ -10017,7 +10162,7 @@ function SToggle({ on, onChange }) {
 function SField({ label, hint, children }) {
   return (
     <div style={{padding:"14px 0", borderBottom:`1px solid ${C.borderLight}`, display:"flex", alignItems:"flex-start", gap:24}}>
-      <div style={{minWidth:200, flexShrink:0, paddingTop:1}}>
+      <div style={{minWidth: isMobile ? 0 : 200, flexShrink:0, paddingTop:1}}>
         <div style={{fontSize:13.5, fontWeight:500, color:C.text, fontFamily:"'DM Sans',sans-serif", marginBottom:2}}>{label}</div>
         {hint && <div style={{fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif", lineHeight:1.4}}>{hint}</div>}
       </div>
@@ -10093,6 +10238,7 @@ function SaveBtn({ saved, onClick }) {
 }
 
 function SettingsPage() {
+  const { isMobile } = useBreakpoint();
   const [hov, setHov] = useState(false);
   const [activeSection, setActiveSection] = useState("sirket");
 
@@ -10156,7 +10302,7 @@ function SettingsPage() {
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px", marginBottom:20,
+        padding: isMobile ? "14px 16px" : "20px 24px", marginBottom:20,
         display:"flex", alignItems:"center", justifyContent:"space-between",
       }}>
         <div>
@@ -10175,7 +10321,7 @@ function SettingsPage() {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"220px 1fr", gap:20, alignItems:"start"}}>
+      <div style={{display:"grid", gridTemplateColumns: isMobile ? "1fr" : "220px 1fr", gap:20, alignItems:"start"}}>
 
         {}
         <div style={{
@@ -10209,7 +10355,7 @@ function SettingsPage() {
         </div>
 
         {}
-        <div style={{display:"flex", flexDirection:"column", gap:20}}>
+        <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
           {}
           {activeSection==="sirket" && (
@@ -10433,7 +10579,7 @@ function SettingsPage() {
           {}
           {activeSection==="durumlar" && (
             <SSection id="durumlar" title="Durum Ayarları" icon="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
-              <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:20, marginTop:8}}>
+              <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap:20, marginTop:8}}>
                 {[
                   {
                     title:"Talep Durumları",
@@ -10883,18 +11029,19 @@ function RpKpiCard({ label, value, sub, icon, color, bg, highlight }) {
 }
 
 function ReportsPage() {
+  const { isMobile } = useBreakpoint();
   const [period, setPeriod] = useState("Bu Ay");
   const PERIODS = ["Bugün","Bu Hafta","Bu Ay","Son 3 Ay"];
 
   const { data:rLeads, loading:rLeadsLoading, error:rLeadsError, reload:reloadLeads } = useRepo("lead",        "getAll");
-  const { data:rQuotes }                                                              = useRepo("payment",     "getAll");
+  const { data:rQuotes }                                                              = useRepo("quote",       "getAll");
   const { data:rRes,   loading:rResLoading,  error:rResError,   reload:reloadRes }   = useRepo("reservation", "getAll");
   const { data:rPays,  loading:rPaysLoading, error:rPaysError,  reload:reloadPays }  = useRepo("payment",     "getAll");
   const { data:rCusts }                                                               = useRepo("customer",    "getAll");
   const isLoading = rLeadsLoading || rResLoading || rPaysLoading;
 
   const metrics = useMemo(
-    () => calculateReportMetrics(period, rLeads, DB.quotes, rRes, rPays, rCusts),
+    () => calculateReportMetrics(period, rLeads, rQuotes, rRes, rPays, rCusts),
     [period, rLeads, rRes, rPays, rCusts]
   );
   const kpi       = metrics.kpi;
@@ -10903,7 +11050,7 @@ function ReportsPage() {
   const maxRev    = Math.max(1, ...metrics.tours.map(t=>t.revenue));
 
   return (
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       {isLoading  ? <LoadingState label="Rapor verileri yükleniyor…"/> : null}
@@ -10917,7 +11064,7 @@ function ReportsPage() {
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px",
+        padding: isMobile ? "14px 16px" : "20px 24px",
         display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:20,
       }}>
         <div>
@@ -10954,14 +11101,14 @@ function ReportsPage() {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns: window.innerWidth < 1024 ? "1fr" : "1fr 280px", gap:20, alignItems:"start"}}>
+      <div style={{display:"grid", gridTemplateColumns: window.innerWidth < 1024 ? "1fr" : isMobile ? "1fr" : "1fr 280px", gap:20, alignItems:"start"}}>
 
         {}
-        <div style={{display:"flex", flexDirection:"column", gap:20}}>
+        <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
           {}
           <RpSection title="Satış Hunisi" icon="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" action={period}>
-            <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12}}>
+            <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap:12}}>
               {[
                 { label:"Talep",           val:kpi.leads,        icon:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",                            color:C.blue,  pct:100 },
                 { label:"Teklif",          val:kpi.quotes,       icon:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6",              color:C.amber, pct:Math.round(kpi.quotes/kpi.leads*100) },
@@ -11153,13 +11300,13 @@ function ReportsPage() {
 
           {}
           <RpSection title="Ödeme Analizi" icon="M2 9a2 2 0 012-2h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V9zM2 13h20">
-            <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12, marginBottom:20}}>
+            <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap:12, marginBottom:20}}>
               {[
-                { label:"Toplam Beklenen", val:`€${fmtNum(payments.expected)}`,   color:C.text,  bg:C.ivoryDark },
-                { label:"Tahsil Edilen",   val:`€${fmtNum(payments.collected)}`,  color:C.green, bg:C.greenBg },
-                { label:"Bekleyen",        val:`€${fmtNum(payments.pending)}`,    color:C.red,   bg:C.redBg },
-                { label:"Kısmi Ödenen",    val:`€${fmtNum(payments.partial)}`,    color:C.amber, bg:C.amberBg },
-                { label:"İade",            val:`€${fmtNum(payments.refunded)}`,   color:C.textFaint, bg:C.ivoryDark },
+                { label:"Toplam Beklenen", val:`€${fmtNum(metrics.payments.expected)}`,   color:C.text,  bg:C.ivoryDark },
+                { label:"Tahsil Edilen",   val:`€${fmtNum(metrics.payments.collected)}`,  color:C.green, bg:C.greenBg },
+                { label:"Bekleyen",        val:`€${fmtNum(metrics.payments.pending)}`,    color:C.red,   bg:C.redBg },
+                { label:"Kısmi Ödenen",    val:`€${fmtNum(metrics.payments.partial)}`,    color:C.amber, bg:C.amberBg },
+                { label:"İade",            val:`€${fmtNum(metrics.payments.refunded)}`,   color:C.textFaint, bg:C.ivoryDark },
               ].map((r,i)=>(
                 <div key={i} style={{
                   background:r.bg, border:`1px solid ${r.color}22`,
@@ -11217,7 +11364,7 @@ function ReportsPage() {
 
           {}
           <RpSection title="Operasyon Analizi" icon="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" action={period}>
-            <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12}}>
+            <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap:12}}>
               {[
                 { label:"Yaklaşan Turlar",       val:metrics.ops.upcoming,   color:C.blue,   bg:C.blueBg,   icon:"M8 2v4M16 2v4M3 10h18M21 8a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V8z" },
                 { label:"Tamamlanan Turlar",      val:metrics.ops.completed,  color:C.green,  bg:C.greenBg,  icon:"M22 11.08V12a10 10 0 11-5.93-9.14 M22 4L12 14.01l-3-3" },
@@ -11495,7 +11642,7 @@ function GSection({ title, icon, children, noPad }) {
         </div>
         <span style={{fontSize:14, fontWeight:600, color:C.text, fontFamily:"'Playfair Display',serif"}}>{title}</span>
       </div>
-      <div style={noPad ? {} : {padding:"16px 20px"}}>{children}</div>
+      <div style={noPad ? {} : {padding: isMobile ? "12px 14px" : "16px 20px"}}>{children}</div>
     </div>
   );
 }
@@ -11508,7 +11655,7 @@ function GInfoRow({ label, value, mono, icon }) {
     }}>
       <span style={{
         fontSize:12, color:C.textFaint, fontFamily:"'DM Sans',sans-serif",
-        flexShrink:0, minWidth:120, paddingTop:1,
+        flexShrink:0, minWidth: isMobile ? 0 : 120, paddingTop:1,
         display:"flex", alignItems:"center", gap:5,
       }}>
         {icon && <GIc d={icon} size={12} sw={1.5}/>}
@@ -11596,7 +11743,7 @@ function GuestDetailPage({ guestId, onBack, onNavigate }) {
   ];
 
   return (
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
@@ -11642,7 +11789,7 @@ function GuestDetailPage({ guestId, onBack, onNavigate }) {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:14}}>
+      <div style={{display:"grid", gridTemplateColumns:isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap:14}}>
         {[
           { label:"Toplam Talep",      val:g.leads,        icon:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01", color:C.blue, bg:C.blueBg },
           { label:"Toplam Teklif",     val:g.quotes,       icon:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6", color:C.amber,bg:C.amberBg },
@@ -11666,7 +11813,7 @@ function GuestDetailPage({ guestId, onBack, onNavigate }) {
       </div>
 
       {}
-      <div style={{display:"grid", gridTemplateColumns:"1fr 280px", gap:20, alignItems:"start"}}>
+      <div style={{display:"grid", gridTemplateColumns: isMobile ? "1fr" : isMobile ? "1fr" : "1fr 280px", gap:20, alignItems:"start"}}>
 
         {}
         <div style={{display:"flex", flexDirection:"column", gap:18}}>
@@ -11938,6 +12085,7 @@ function GuestDetailPage({ guestId, onBack, onNavigate }) {
 }
 
 function CustomersPage({ onSelectGuest }) {
+  const { isMobile } = useBreakpoint();
   const [showNewGuest, setShowNewGuest] = useState(false);
   const [activeTab, setActiveTab] = useState("Tümü");
   const [search, setSearch]       = useState("");
@@ -11970,12 +12118,12 @@ function CustomersPage({ onSelectGuest }) {
   const counts = TABS.reduce((acc,t)=>({...acc,[t]: t==="Tümü"?MOCK_GUESTS.length:MOCK_GUESTS.filter(tabMap[t]||tabMap["Tümü"]).length}),{});
 
   return (
-    <div style={{display:"flex", flexDirection:"column", gap:20}}>
+    <div style={{display:"flex", flexDirection:"column", gap: isMobile ? 12 : 20}}>
 
       {}
       <div style={{
         background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-        padding:"20px 24px",
+        padding: isMobile ? "14px 16px" : "20px 24px",
         display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:20,
       }}>
         <div>
@@ -12287,7 +12435,7 @@ function ConvDetail({ conv }) {
           </div>
         </div>
       </div>
-      <div style={{flex:1,overflowY:"auto",padding:"16px 20px",background:C.ivory,display:"flex",flexDirection:"column"}}>
+      <div style={{flex:1,overflowY:"auto",padding: isMobile ? "12px 14px" : "16px 20px",background:C.ivory,display:"flex",flexDirection:"column"}}>
         {conv.messages.length>0&&<div style={{textAlign:"center",marginBottom:16,fontSize:11.5,color:C.textFaint,fontFamily:"'DM Sans',sans-serif"}}><span style={{background:C.ivoryDark,padding:"3px 12px",borderRadius:99,border:`1px solid ${C.border}`}}>{conv.messages?.[0]?.date}</span></div>}
         {conv.messages.map(msg=><MsgBubble key={msg.id} msg={msg} customerName={cust?.name}/>)}
       </div>
@@ -12362,6 +12510,7 @@ function ConvContext({ conv }) {
 
 function MessagesPage() {
   const { isMobile } = useBreakpoint();
+  const [mobileShowDetail, setMobileShowDetail] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Tümü");
   const [selectedId, setSelectedId]     = useState("CONV-001");
   const [mobileView, setMobileView]     = useState("list");
@@ -12469,6 +12618,7 @@ function MessagesPage() {
 }
 
 function NewGuestModal({ onClose }) {
+  const [busy, setBusy] = useState(false);
   const [name,setName]=useState(""); const [phone,setPhone]=useState(""); const [email,setEmail]=useState("");
   const [country,setCountry]=useState("Avustralya"); const [lang,setLang]=useState("İngilizce");
   const [source,setSource]=useState("Website");
@@ -12478,18 +12628,27 @@ function NewGuestModal({ onClose }) {
   async function handleSubmit() {
     const e = validate({name:{required:"Ad Soyad zorunludur"},email:{email:"Geçerli e-posta girin"}},{name,email});
     setErrs(e); if (Object.keys(e).length) return;
-    const srcObj = DB.sources.find(s=>s.label===source);
-    const { error } = await mutCustG("create", {
-      name, phone:phone||"", email:email||"",
-      initials:name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
-      flag:"🌍", country, language:lang, sourceId:srcObj?.id||"SRC-01", notes,
-    });
-    if (error) { showToast("Hata: "+error); return; }
-    showToast("Misafir oluşturuldu ✓"); onClose();
+    setBusy(true);
+    try {
+      const { data:newCust, error } = await mutCustG("create", {
+        name, phone:phone||"", email:email||"",
+        initials:name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+        flag:"🌍", country, language:lang, sourceId:getSourceId(source)||null, notes,
+      });
+      if (error) throw new Error(error);
+      showToast("Misafir oluşturuldu ✓");
+      onSuccess && onSuccess(newCust);
+      onClose();
+    } catch(err) {
+      showToast("Misafir oluşturulurken bir hata oluştu: " + (err.message||err));
+      console.error("[NewGuestModal]", err);
+    } finally {
+      setBusy(false);
+    }
   }
   return (
     <Modal title="Yeni Misafir Ekle" onClose={onClose} onSubmit={handleSubmit}
-      submitLabel={guestMut?"Kaydediliyor…":"Misafiri Kaydet"}>
+      submitLabel={busy || guestMut ? "Kaydediliyor…" : "Misafiri Kaydet"}>
       <FGrid>
         <FRow label="Ad Soyad" required error={errs.name}><FText value={name} onChange={setName} placeholder="Sarah Johnson"/></FRow>
         <FRow label="Telefon"><FText value={phone} onChange={setPhone} placeholder="+90 555 000 0000" mono/></FRow>
@@ -12504,6 +12663,9 @@ function NewGuestModal({ onClose }) {
 }
 
 function NewTaskModal({ onClose, prefillCustomerId, prefillLeadId, prefillResId }) {
+  const { data:staffList } = useRepo("staff", "getAll");
+  const { data:custList } = useRepo("customer", "getAll");
+  const [busy, setBusy] = useState(false);
   const [title,setTitle]=useState("");
   const [category,setCategory]=useState("Operasyon");
   const [priority,setPriority]=useState("Orta");
@@ -12517,17 +12679,27 @@ function NewTaskModal({ onClose, prefillCustomerId, prefillLeadId, prefillResId 
   async function handleSubmit() {
     const e = validate({ title:{ required:"Görev başlığı zorunludur" } }, { title });
     setErrs(e); if (Object.keys(e).length) return;
-    const { error:te } = await mutTask("create", {
-      title, customerId:custId||null,
-      leadId:prefillLeadId||null, resId:prefillResId||null,
-      category, priority, dueDate:dueDate||"—", assigneeId:assignee, notes,
-    });
-    if (te) { showToast("Görev oluşturulamadı ✗"); return; }
-    showToast("Görev oluşturuldu ✓"); onClose();
+    setBusy(true);
+    try {
+      const { data:newTask, error:te } = await mutTask("create", {
+        title, customerId:custId||null,
+        leadId:prefillLeadId||null, resId:prefillResId||null,
+        category, priority, dueDate:dueDate||null, assigneeId:assignee, notes,
+      });
+      if (te) throw new Error(te);
+      showToast("Görev oluşturuldu ✓");
+      onSuccess && onSuccess(newTask);
+      onClose();
+    } catch(err) {
+      showToast("Görev oluşturulurken bir hata oluştu.");
+      console.error("[NewTaskModal]", err);
+    } finally {
+      setBusy(false);
+    };
   }
   return (
     <Modal title="Yeni Görev Ekle" onClose={onClose} onSubmit={handleSubmit}
-      submitLabel={taskMut?"Kaydediliyor…":"Görevi Kaydet"}>
+      submitLabel={busy || taskMut ? "Kaydediliyor…" : "Görevi Kaydet"}>
       <FRow label="Görev Başlığı" required error={errs.title}>
         <FText value={title} onChange={setTitle} placeholder="Görevi kısaca açıklayın…"/>
       </FRow>
@@ -12545,12 +12717,12 @@ function NewTaskModal({ onClose, prefillCustomerId, prefillLeadId, prefillResId 
         </FRow>
         <FRow label="Sorumlu">
           <FSelect value={assignee} onChange={setAssignee}
-            options={DB.staff.map(s=>[s.id,s.name])}/>
+            options={(staffList||DB.staff).map(s=>[s.id, s.name||s.full_name||s.id])}/>
         </FRow>
       </FGrid>
       <FRow label="İlgili Müşteri">
         <FSelect value={custId} onChange={setCustId}
-          options={[["","— Seçin —"], ...DB.customers.map(c=>[c.id,c.name])]}/>
+          options={[["","— Seçin —"], ...(custList||DB.customers).map(c=>[c.id, c.name||c.full_name||c.id])]}/>
       </FRow>
       <FRow label="Notlar">
         <FTextArea value={notes} onChange={setNotes} placeholder="Ek notlar…"/>
@@ -12558,8 +12730,10 @@ function NewTaskModal({ onClose, prefillCustomerId, prefillLeadId, prefillResId 
     </Modal>
   );
 }
-
-function NewReminderModal({ onClose }) {
+function NewReminderModal({ onClose, onSuccess, prefill }) {
+  const { data:staffList } = useRepo("staff", "getAll");
+  const { data:custList } = useRepo("customer", "getAll");
+  const [busy, setBusy] = useState(false);
   const [title,setTitle]=useState("");
   const [type,setType]=useState("Ödeme Takibi");
   const [priority,setPriority]=useState("Orta");
@@ -12573,12 +12747,22 @@ function NewReminderModal({ onClose }) {
   async function handleSubmit() {
     const e = validate({ title:{ required:"Başlık zorunludur" } }, { title });
     setErrs(e); if (Object.keys(e).length) return;
-    const { error:re } = await mutRem("create", {
-      title, customerId:custId||null, leadId:null, resId:null,
-      type, priority, dueDate:dueDate||"—", assigneeId:assignee, notes,
-    });
-    if (re) { showToast("Hatırlatma oluşturulamadı ✗"); return; }
-    showToast("Hatırlatma oluşturuldu ✓"); onClose();
+    setBusy(true);
+    try {
+      const { data:newRem, error:re } = await mutRem("create", {
+        title, customerId:custId||null, leadId:null, resId:null,
+        type, priority, dueDate:dueDate||null, assigneeId:assignee, notes,
+      });
+      if (re) throw new Error(re);
+      showToast("Hatırlatma oluşturuldu ✓");
+      onSuccess && onSuccess(newRem);
+      onClose();
+    } catch(err) {
+      showToast("Hatırlatma oluşturulurken bir hata oluştu.");
+      console.error("[NewReminderModal]", err);
+    } finally {
+      setBusy(false);
+    }
   }
   return (
     <Modal title="Yeni Hatırlatma" onClose={onClose} onSubmit={handleSubmit}
@@ -12600,12 +12784,12 @@ function NewReminderModal({ onClose }) {
         </FRow>
         <FRow label="Sorumlu">
           <FSelect value={assignee} onChange={setAssignee}
-            options={DB.staff.map(s=>[s.id,s.name])}/>
+            options={(staffList||DB.staff).map(s=>[s.id, s.name||s.full_name||s.id])}/>
         </FRow>
       </FGrid>
       <FRow label="İlgili Müşteri">
         <FSelect value={custId} onChange={setCustId}
-          options={[["","— Seçin —"], ...DB.customers.map(c=>[c.id,c.name])]}/>
+          options={[["","— Seçin —"], ...(custList||DB.customers).map(c=>[c.id, c.name||c.full_name||c.id])]}/>
       </FRow>
       <FRow label="Notlar">
         <FTextArea value={notes} onChange={setNotes} placeholder="Ek notlar…"/>
@@ -12613,8 +12797,7 @@ function NewReminderModal({ onClose }) {
     </Modal>
   );
 }
-
-function NewPaymentModal({ onClose }) {
+function NewPaymentModal({ onClose, onSuccess }) {
   const [custId,setCustId]=useState(DB.customers[0]?.id||"");
   const [resId,setResId]=useState("");
   const [amount,setAmount]=useState("");
@@ -12629,17 +12812,27 @@ function NewPaymentModal({ onClose }) {
   async function handleSubmit() {
     const e = validate({amount:{required:"Tutar zorunludur",number:"Sayısal değer girin"}},{amount});
     setErrs(e); if (Object.keys(e).length) return;
-    const amt = parseFloat(amount);
-    const { error:pe } = await mutPay("create", {
-      resId:resId||null, customerId:custId||null,
-      amount:amt, currency, paymentType:payType, method, notes,
-    });
-    if (pe) { showToast("Ödeme kaydedilemedi ✗"); return; }
-    showToast("Ödeme kaydedildi ✓"); onClose();
+    setBusy(true);
+    try {
+      const amt = parseFloat(amount);
+      const { data:newPay, error:pe } = await mutPay("create", {
+        resId:resId||null, customerId:custId||null,
+        amount:amt, currency, paymentType:payType, method, notes,
+      });
+      if (pe) throw new Error(pe);
+      showToast("Ödeme kaydedildi ✓");
+      onSuccess && onSuccess(newPay);
+      onClose();
+    } catch(err) {
+      showToast("Ödeme kaydedilirken bir hata oluştu: " + (err.message||err));
+      console.error("[NewPaymentModal]", err);
+    } finally {
+      setBusy(false);
+    }
   }
   return (
     <Modal title="Ödeme Kaydı Ekle" onClose={onClose} onSubmit={handleSubmit}
-      submitLabel={payMut?"Kaydediliyor…":"Ödemeyi Kaydet"}>
+      submitLabel={busy || payMut ? "Kaydediliyor…" : "Ödemeyi Kaydet"}>
       <FRow label="Müşteri">
         <FSelect value={custId} onChange={v=>{setCustId(v);setResId("");}}
           options={DB.customers.map(c=>[c.id,c.name])}/>
@@ -12936,6 +13129,7 @@ function getActiveRepo(entity) {
 }
 
 function useRepo(entity, method, arg) {
+  const [busy, setBusy] = useState(false);
   const [state, setState] = useState({ data:null, loading:true, error:null });
   const tick = useStore();
   useEffect(() => {
@@ -12969,9 +13163,20 @@ function useRepoMutation(entity) {
   const [mutating, setMutating] = useState(false);
   async function mutate(method, ...args) {
     setMutating(true);
-    try { const r=await Promise.resolve(getActiveRepo(entity)[method].call(getActiveRepo(entity),...args));Store.notify();return{data:r,error:null}; }
-    catch(e) { return{data:null,error:e.message}; }
-    finally { setMutating(false); }
+    try {
+      if (AppConfig.useSupabase && !getSB()) await _sbReadyPromise;
+      const repo = getActiveRepo(entity);
+      if (!repo || typeof repo[method] !== 'function')
+        throw new Error(`Unknown repo method: ${entity}.${method}`);
+      const r = await Promise.resolve(repo[method].call(repo, ...args));
+      Store.notify();
+      return { data:r, error:null };
+    } catch(e) {
+      console.error(`[mutate] ${entity}.${method}:`, e.message||e);
+      return { data:null, error:e.message||String(e) };
+    } finally {
+      setMutating(false);
+    }
   }
   return { mutate, mutating };
 }
@@ -13818,9 +14023,9 @@ function NewLeadModal({ onClose, onSuccess }) {
       let custId = null;
       if (AppConfig.useSupabase) {
         const repo = getActiveRepo('customer');
-        const existing = await Promise.resolve(
-          repo.findByContact({ email:email||null, phone:phone||null })
-        ).catch(()=>null);
+        const existing = (typeof repo.findByContact === 'function')
+          ? await Promise.resolve(repo.findByContact({ email:email||null, phone:phone||null })).catch(()=>null)
+          : null;
         if (existing) {
           custId = existing.id;
         } else {
@@ -13833,7 +14038,7 @@ function NewLeadModal({ onClose, onSuccess }) {
         }
       } else {
         const nc = { id:`CUST-${Date.now()}`, name, phone, email, flag:"🌍",
-          country:"Diğer", language:"İngilizce", status:"Aktif", sourceId:"SRC-01",
+          country:"Diğer", language:"İngilizce", status:"Aktif", sourceId:resolvedSourceId||null,
           initials:name.split(" ").map(w=>w[0]||"").join("").slice(0,2).toUpperCase() };
         DB.customers.push(nc);
         custId = nc.id;
@@ -13897,6 +14102,7 @@ function NewLeadModal({ onClose, onSuccess }) {
 }
 
 function NewTourModal({ onClose }) {
+  const [busy, setBusy] = useState(false);
   const [name,     setName]     = useState("");
   const [category, setCategory] = useState("Kültür & Tarih");
   const [duration, setDuration] = useState("1");
@@ -13913,17 +14119,27 @@ function NewTourModal({ onClose }) {
     }, { name, price });
     setErrs(e);
     if (Object.keys(e).length) return;
-    const { error } = await mutTour("create", {
-      name, category, duration:parseInt(duration)||1,
-      flatPrice:parseFloat(price)||0, currency, description:desc,
-    });
-    if (error) { showToast("Tur oluşturulamadı ✗"); return; }
-    showToast("Tur oluşturuldu ✓"); onClose();
+    setBusy(true);
+    try {
+      const { data:newTour, error } = await mutTour("create", {
+        name, category, duration:parseInt(duration)||1,
+        flatPrice:parseFloat(price)||0, currency, description:desc,
+      });
+      if (error) throw new Error(error);
+      showToast("Tur oluşturuldu ✓");
+      onSuccess && onSuccess(newTour);
+      onClose();
+    } catch(err) {
+      showToast("Tur oluşturulurken bir hata oluştu.");
+      console.error("[NewTourModal]", err);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <Modal title="Yeni Tur Ekle" onClose={onClose} onSubmit={handleSubmit}
-      submitLabel={tourMut?"Kaydediliyor…":"Turu Kaydet"}>
+      submitLabel={busy || tourMut ? "Kaydediliyor…" : "Turu Kaydet"}>
       <FRow label="Tur Adı" required error={errs.name} full>
         <FText value={name} onChange={setName} placeholder="Private Istanbul Experience" error={errs.name}/>
       </FRow>
@@ -15661,9 +15877,9 @@ function safeParam(param) {
 function MobileCard({ onClick, children, style }) {
   return (
     <div onClick={onClick} style={{
-      padding:'12px 16px', borderBottom:`1px solid ${C.border}`,
+      padding:'14px 16px', borderBottom:`1px solid ${C.border}`,
       cursor: onClick ? 'pointer' : 'default', background:C.white,
-      transition:'background 0.1s', ...style,
+      transition:'background 0.1s', minHeight:44, ...style,
     }}
       onMouseEnter={e=>onClick&&(e.currentTarget.style.background=C.ivory)}
       onMouseLeave={e=>onClick&&(e.currentTarget.style.background=C.white)}
