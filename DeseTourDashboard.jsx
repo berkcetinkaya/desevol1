@@ -6763,6 +6763,7 @@ function CalSidebar({ todayEvents, weekEvents }) {
     <div style={{
       background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
       overflow:"hidden", position:"sticky", top:20,
+      width:"100%", minWidth:0, maxHeight:"calc(100vh - 120px)", overflowY:"auto",
     }}>
       {}
       <div style={{
@@ -7354,7 +7355,7 @@ function CalendarPage() {
       </div>
 
       {}
-      <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : isMobile ? "1fr" : "1fr 280px", gap:20, alignItems:"start" }}>
+      <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 320px", gap:20, alignItems:"start" }}>
 
         {}
         <div>
@@ -13071,7 +13072,11 @@ const SupabaseCustomerRepo = {
   },
   async getById(id){const sb=getSB();if(!sb)return CustomerRepository.getById(id);const{data,error}=await sb.from('customers').select('*').eq('id',id).maybeSingle();if(error)throw new Error(error.message);return mapCustomerFromDB(data);},
   async findByContact({email,phone}){const sb=getSB();if(!sb)return CustomerRepository.findByContact({email,phone});if(!email&&!phone)return null;let q=sb.from('customers').select('*');if(email&&phone)q=q.or(`email.eq.${email},phone.eq.${phone}`);else if(email)q=q.eq('email',email);else q=q.eq('phone',phone);const{data}=await q.limit(1).maybeSingle();return mapCustomerFromDB(data);},
-  async create(d){const sb=getSB();if(!sb)return CustomerRepository.create(d);const row=mapCustomerToDB(d);if(!row.full_name)row.full_name=d.name||'Bilinmiyor';row.is_active=true;row.import_type=d.importType||'manual';const{data:c,error}=await sb.from('customers').insert(row).select().single();if(error)throw new Error(error.message);try{await _sbLog('customer',c.id,'created',`Yeni misafir: ${c.full_name}`);}catch(_){}return mapCustomerFromDB(c);},
+  async create(d){const sb=getSB();if(!sb)return CustomerRepository.create(d);const row=mapCustomerToDB(d);if(!row.full_name)row.full_name=d.name||'Bilinmiyor';row.is_active=true;row.import_type=d.importType||'manual';
+    // Email duplicate check — upsert yerine kontrollü insert
+    if(row.email){const{data:existing}=await sb.from('customers').select('id').eq('email',row.email).maybeSingle().catch(()=>({data:null}));if(existing){// Email zaten var — mevcut kaydı döndür
+    const{data:existingFull}=await sb.from('customers').select('*').eq('id',existing.id).single().catch(()=>({data:null}));if(existingFull)return mapCustomerFromDB(existingFull);}}
+    const{data:c,error}=await sb.from('customers').insert(row).select().single();if(error)throw new Error(error.message);try{await _sbLog('customer',c.id,'created',`Yeni misafir: ${c.full_name}`);}catch(_){}return mapCustomerFromDB(c);},
   async update(id,p){const sb=getSB();if(!sb)return CustomerRepository.update(id,p);const row=mapCustomerToDB(p);const{data:u,error}=await sb.from('customers').update(row).eq('id',id).select().single();if(error)throw new Error(error.message);return mapCustomerFromDB(u);},
   async delete(id){const sb=getSB();if(!sb)return CustomerRepository.delete(id);const{error}=await sb.from('customers').update({is_active:false}).eq('id',id);if(error)throw new Error(error.message);return true;},
 };
